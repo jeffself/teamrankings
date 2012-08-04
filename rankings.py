@@ -18,6 +18,13 @@ def avgPtsGame(total_points, total_games):
     '''
     return float(total_points / total_games / 2)
 
+def adjustScore(score):
+    '''We adjust the score here to prevent a team from running up the
+    score.
+    '''
+    adjScore = score - (score * score)/250.0
+    return adjScore
+
 def expectedGameResult (rating1, rating2, x):
     '''The expectedGameResult method is used to determine an expected
     outcome of a game. The expected outcome is determined by comparing
@@ -42,8 +49,15 @@ def calcGameRatio (score1,score2,sport):
     whereas if the teams tie each team receives an additional 0.5 points.
 
     '''
-    adjScore1 = pow((adjustScore(score1))/sport,2)
-    adjScore2 = pow((adjustScore(score2))/sport,2)
+    if sport == 'football':
+        max_score = 6.0
+    elif sport == 'basketball':
+        max_score = 3.0
+    else:
+        max_score = 1.0
+
+    adjScore1 = pow((adjustScore(score1))/max_score,2)
+    adjScore2 = pow((adjustScore(score2))/max_score,2)
     gameRatio = (adjScore1 + 1.0) / (adjScore1 + adjScore2 + 2.0)
     if score1 > score2:
         gameRatio = gameRatio + 1.0
@@ -52,7 +66,7 @@ def calcGameRatio (score1,score2,sport):
             gameRatio = gameRatio + 0.5
     return gameRatio * 0.5
 
-def addTeam (name):
+def addTeam (teamlist, name):
     '''The addTeam function is used to add a team to the teamlist.  All
     values are set to 0 except for the rating which is set to 50.0.
 
@@ -79,7 +93,7 @@ def addTeam (name):
             }
     teamlist.append(team)
 
-def lookupTeam (teamname):
+def lookupTeam (teamlist, teamname):
     '''The lookupTeam function is used to look up a team in the teamlist.
     If the team is not located, then we call the addTeam function.
 
@@ -88,15 +102,15 @@ def lookupTeam (teamname):
         if teamname == row['name']:
             break
     else:
-        addTeam (teamname)
+        addTeam (teamlist, teamname)
 
-def updateTeamStats (team1, score1, team2, score2):
+def updateTeamStats (teamlist, team1, score1, team2, score2):
     '''The updateTeamStats function updates the won-lost-tied record and pts
     scored and pts allowed for each of the two teams involved in a game.
 
     '''
-    lookupTeam (team1)
-    lookupTeam (team2)
+    lookupTeam (teamlist, team1)
+    lookupTeam (teamlist, team2)
     for t in teamlist:
         if team1 == t['name']:
             t['pf']    = t['pf'] + score1
@@ -133,18 +147,39 @@ def main():
     '''
     TeamList = []
 
-    '''Define a game dictionary'''
-    g = {}
-
     '''Read in the scores file'''
     f = open(sys.argv[1], 'r')
     try:
         gameReader = csv.reader(f, delimiter='|')
         for game in gameReader:
+            g = {}
             g['date'], g['team1'], g['score1'], g['team2'], g['score2'] = game
-            print(g)
+            g['score1'] = int(g['score1'])
+            g['score2'] = int(g['score2'])
+            Schedule.append(g)
     finally:
         f.close()
+
+
+    '''Initialize totalpoints and totalgames to 0.'''
+    totalpoints = 0
+    totalgames = 0
+
+    '''Get the sport from argument 2 on the command line'''
+    sport = sys.argv[2]
+
+    for g in Schedule:
+        '''We're getting the total points and the total games played'''
+        totalpoints = totalpoints + g['score1'] + g['score2']
+        totalgames = totalgames + 1
+
+        '''Add the field ratio to the game dictionary and call
+           calcGameRatio to get the result
+        '''
+        g['ratio'] = calcGameRatio(g['score1'], g['score2'], sport)
+
+        '''Update the stats for each of the game's participants'''
+        updateTeamStats(TeamList, g['team1'], g['score1'], g['team2'], g['score2'])
 
 if __name__ == "__main__":
     main()
