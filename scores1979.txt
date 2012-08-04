@@ -1,0 +1,159 @@
+09/07/1979|Kempsville|14|Bayside|8
+09/07/1979|Lake Taylor|23|Booker T. Washington|0
+09/07/1979|Churchland|15|Oscar Smith|0
+09/07/1979|Cox|6|Princess Anne|6
+09/07/1979|Deep Creek|31|Cradock|0
+09/07/1979|First Colonial|19|Kellam|12
+09/07/1979|Granby|6|Ferguson|0
+09/07/1979|Great Bridge|34|Manor|0
+09/07/1979|Green Run|7|Norfolk Academy|0
+09/07/1979|Indian River|12|Norcom|0
+09/07/1979|Norview|8|Maury|6
+09/07/1979|Woodrow Wilson|16|Western Branch|0
+09/14/1979|Frank Cox|21|Bayside|0
+09/14/1979|Norview|17|Booker T. Washington|0
+09/14/1979|Woodrow Wilson|27|Churchland|0
+09/14/1979|Indian River|33|Cradock|0
+09/14/1979|Deep Creek|15|Norfolk Catholic|6
+09/14/1979|First Colonial|20|Granby|6
+09/14/1979|Great Bridge|31|Princess Anne|20
+09/14/1979|Maury|42|Kellam|16
+09/14/1979|Lake Taylor|20|Kempsville|6
+09/14/1979|Western Branch|10|Manor|0
+09/14/1979|Norcom|6|Oscar Smith|0
+09/21/1979|Green Run|7|Bayside|6
+09/21/1979|Booker T. Washington|6|Kempsville|3
+09/21/1979|Western Branch|10|Churchland|6
+09/21/1979|Maury|30|Cox|16
+09/21/1979|Lake Taylor|20|Cradock|6
+09/21/1979|Indian River|6|Deep Creek|0
+09/21/1979|Princess Anne|17|First Colonial|16
+09/21/1979|Granby|26|Norfolk Catholic|0
+09/21/1979|Great Bridge|14|Oscar Smith|0
+09/21/1979|Norview|40|Kellam|12
+09/21/1979|Woodrow Wilson|36|Manor|0
+09/28/1979|First Colonial|24|Bayside|0
+09/28/1979|Booker T. Washington|17|Manor|8
+09/28/1979|Churchland|15|Deep Creek|6
+09/28/1979|Cox|6|Green Run|3
+09/28/1979|Western Branch|42|Cradock|6
+09/28/1979|Granby|17|Warwick|0
+09/28/1979|Great Bridge|20|Norcom|14
+09/28/1979|Indian River|19|Princess Anne|10
+09/28/1979|Kempsville|30|Kellam|0
+09/28/1979|Maury|14|Lake Taylor|6
+09/28/1979|Norview|14|Oscar Smith|0
+10/05/1979|Kellam|19|Bayside|0
+10/05/1979|Granby|26|Booker T. Washington|20
+10/05/1979|Manor|13|Churchland|10
+10/05/1979|Cox|14|Lake Taylor|6
+10/05/1979|Oscar Smith|16|Cradock|0
+10/05/1979|Western Branch|24|Deep Creek|6
+10/05/1979|First Colonial|27|Kempsville|20
+10/05/1979|Great Bridge|13|Indian River|13
+10/05/1979|Princess Anne|22|Green Run|6
+10/05/1979|Maury|24|Norfolk Catholic|21
+10/05/1979|Woodrow Wilson|35|Norcom|0
+10/05/1979|Hampton|20|Norview|6
+10/12/1979|Booker T. Washington|14|Bayside|7
+10/12/1979|Churchland|40|Cradock|8
+10/12/1979|First Colonial|27|Cox|8
+10/12/1979|Great Bridge|17|Deep Creek|0
+10/12/1979|Lake Taylor|9|Granby|7
+10/12/1979|Green Run|14|Kellam|6
+10/12/1979|Woodrow Wilson|17|Indian River|0
+10/12/1979|Maury|14|Kempsville|13
+10/12/1979|Manor|14|Norcom|6
+10/12/1979|Norfolk Academy|22|Norfolk Catholic|12
+10/12/1979|Norview|21|Princess Anne|14
+10/12/1979|Oscar Smith|3|Western Branch|0
+10/19/1979|Maury|38|Bayside|8
+10/19/1979|Booker T. Washington|18|First Colonial|6
+10/19/1979|Norcom|15|Churchland|14
+10/19/1979|Kempsville|28|Cox|6
+10/19/1979|Great Bridge|31|Cradock|7
+10/19/1979|Woodrow Wilson|7|Deep Creek|0
+10/19/1979|Hermitage|19|Granby|6
+10/19/1979|Indian River|20|Western Branch|17
+10/19/1979|Princess Anne|31|Kellam|6
+10/19/1979|Norview|7|Lake Taylor|6
+10/19/1979|Oscar Smith|13|Manor|6
+10/26/1979|Lake Taylor|18|Bayside|8
+10/26/1979|Booker T. Washington|14|Maury|6
+10/26/1979|Indian River|0|Churchland|0
+10/26/1979|Cox|14|Kellam|0
+10/26/1979|Manor|38|Cradock|7
+10/26/1979|Deep Creek|13|Norcom|7
+10/26/1979|First Colonial|14|Green Run|7
+10/26/1979|Norview|24|Granby|7
+10/26/1979|Great Bridge|21|Western Branch|14
+10/26/1979|Princess Anne|20|Kempsville|16
+10/26/1979|Oscar Smith|0|Woodrow Wilson|0
+11/02/1979|Norview|35|Bayside|20
+11/02/1979|Cox|20|Booker T. Washington|0
+11/02/1979|Great Bridge|23|Churchland|0
+11/02/1979|Woodrow Wilson|38|Cradock|0
+11/02/1979|Deep Creek|13|Oscar Smith|7
+11/02/1979|First Colonial|41|Maury|6
+11/02/1979|Granby|21|Kellam|14
+11/02/1979|Kempsville|15|Green Run|0
+11/02/1979|Indian River|21|Manor|6
+11/02/1979|Princess Anne|10|Lake Taylor|6
+11/02/1979|Western Branch|13|Norcom|6
+11/09/1979|Princess Anne|41|Bayside|29
+11/09/1979|Booker T. Washington|20|Kellam|0
+11/09/1979|Churchland|37|Warwick|6
+11/09/1979|Cox|28|Western Branch|6
+11/09/1979|Norcom|43|Cradock|6
+11/09/1979|Deep Creek|25|Manor|6
+11/09/1979|First Colonial|17|Lake Taylor|14
+11/09/1979|Maury|20|Granby|14
+11/09/1979|Great Bridge|12|Woodrow Wilson|7
+11/09/1979|Green Run|38|Norfolk Catholic|0
+11/09/1979|Indian River|27|Oscar Smith|7
+11/09/1979|Kempsville|9|Norview|6
+11/09/1979|Bethel|19|Hampton|6
+11/16/1979|Princess Anne|21|Great Bridge|7
+11/16/1979|Norview|20|Hampton|19
+11/16/1979|Jefferson/Huguenot/Wythe|3|Marshall/Walker|0
+11/16/1979|Petersburg|14|Highland Springs|7
+11/16/1979|Robinson|17|Oakton|0
+11/16/1979|Mount Vernon|20|Annandale|17
+11/16/1979|Patrick Henry(R)|13|Stonewall Jackson(M)|0
+11/16/1979|Pulaski County|7|George Washington|0
+11/16/1979|Southampton|38|L.C. Bird|6
+11/16/1979|York|14|Matoaca|0
+11/16/1979|Western Albemarle|21|James Monroe|20
+11/16/1979|Handley|35|Orange|11
+11/16/1979|Jefferson Forest|21|Alleghany|0
+11/16/1979|Bassett|21|Amherst County|14
+11/16/1979|Narrows|48|Gate City|0
+11/16/1979|Abingdon|21|Blacksburg|6
+11/16/1979|Washington & Lee|21|King William|17
+11/16/1979|New Kent|13|Onancock|9
+11/16/1979|Powhatan|40|Madison County|22
+11/16/1979|Central|32|Montevideo|13
+11/16/1979|Parry McCluer|55|Stuarts Draft|8
+11/16/1979|Honaker|32|Auburn|0
+11/16/1979|Haysi|7|Rye Cove|6
+11/23/1979|Princess Anne|28|Norview|7
+11/23/1979|Petersburg|14|Jefferson/Huguenot/Wythe|7
+11/23/1979|Mount Vernon|17|Robinson|7
+11/23/1979|Patrick Henry(R)|13|Pulaski County|7
+11/23/1979|Southampton|34|York|0
+11/23/1979|Western Albemarle|40|Handley|6
+11/23/1979|Jefferson Forest|24|Bassett|8
+11/23/1979|Abingdon|21|Narrows|0
+11/23/1979|Washington & Lee|32|New Kent|11
+11/23/1979|Central|24|Powhatan|21
+11/23/1979|Parry McCluer|41|Honaker|0
+11/23/1979|Clintwood|28|Haysi|7
+12/01/1979|Petersburg|18|Princess Anne|14
+12/01/1979|Patrick Henry(R)|13|Mount Vernon|10
+12/01/1979|Southampton|21|Western Albemarle|8
+12/01/1979|Jefferson Forest|10|Abingdon|7
+12/01/1979|Washington & Lee|35|Central|28
+12/01/1979|Parry McCluer|15|Clintwood|8
+12/08/1979|Petersburg|14|Patrick Henry(R)|6
+12/08/1979|Southampton|14|Jefferson Forest|0
+12/08/1979|Parry McCluer|20|Washington & Lee|6

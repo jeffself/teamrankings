@@ -1,6 +1,7 @@
 import sys
 import string
 import math
+import csv
 
 
 def totalPtsGame(score1, score2):
@@ -132,7 +133,18 @@ def main():
     '''
     TeamList = []
 
+    '''Define a game dictionary'''
+    g = {}
 
+    '''Read in the scores file'''
+    f = open(sys.argv[1], 'r')
+    try:
+        gameReader = csv.reader(f, delimiter='|')
+        for game in gameReader:
+            g['date'], g['team1'], g['score1'], g['team2'], g['score2'] = game
+            print(g)
+    finally:
+        f.close()
 
 if __name__ == "__main__":
     main()
