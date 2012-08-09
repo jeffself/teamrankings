@@ -11,18 +11,17 @@ def totalPtsGame(score1, score2):
     '''
     return score1 + score2
 
-def avgPtsGame(total_points, total_games):
-    '''The avgPtsGame method returns the average points scored per
-    team per game.
-
-    '''
-    return float(total_points / total_games / 2)
-
-def adjustScore(score):
+def adjustScore(score,sport):
     '''We adjust the score here to prevent a team from running up the
     score.
     '''
-    adjScore = score - (score * score)/250.0
+    if sport == 'football':
+        score_factor = 250.0
+    elif sport == 'basketball':
+        score_factor = 750.0
+    else:
+        score_factor = 100.0
+    adjScore = score - (score * score)/score_factor
     return adjScore
 
 def expectedGameResult (rating1, rating2, x):
@@ -56,8 +55,8 @@ def calcGameRatio (score1,score2,sport):
     else:
         max_score = 1.0
 
-    adjScore1 = pow((adjustScore(score1))/max_score,2)
-    adjScore2 = pow((adjustScore(score2))/max_score,2)
+    adjScore1 = pow((adjustScore(score1,sport))/max_score,2)
+    adjScore2 = pow((adjustScore(score2,sport))/max_score,2)
     gameRatio = (adjScore1 + 1.0) / (adjScore1 + adjScore2 + 2.0)
     if score1 > score2:
         gameRatio = gameRatio + 1.0
@@ -66,8 +65,8 @@ def calcGameRatio (score1,score2,sport):
             gameRatio = gameRatio + 0.5
     return gameRatio * 0.5
 
-def addTeam (teamlist, name):
-    '''The addTeam function is used to add a team to the teamlist.  All
+def initTeam (teamlist, name):
+    '''The initTeam function is used to add a team to the teamlist.  All
     values are set to 0 except for the rating which is set to 50.0.
 
     '''
@@ -102,7 +101,7 @@ def lookupTeam (teamlist, teamname):
         if teamname == row['name']:
             break
         else:
-            addTeam (teamlist, teamname)
+            initTeam (teamlist, teamname)
 
 def updateTeamStats (teamlist, team1, score1, team2, score2):
     '''The updateTeamStats function updates the won-lost-tied record and pts
