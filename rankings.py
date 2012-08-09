@@ -93,6 +93,19 @@ def addTeam (teamlist, name):
             }
     teamlist.append(team)
 
+def getTeamInfo(teamlist, teamname):
+    '''The getTeamInfo method provides the data for a team in the
+    teamlist. If the team that is being looked up is not in the teamlist,
+    the addTeam method is called to add the team to the list.
+    '''
+
+    for row in teamlist:
+        if teamname == row['name']:
+            return row
+        else:
+            addTeam(teamlist, teamname)
+            return row
+
 def lookupTeam (teamlist, teamname):
     '''The lookupTeam function is used to look up a team in the teamlist.
     If the team is not located, then we call the addTeam function.
@@ -100,7 +113,7 @@ def lookupTeam (teamlist, teamname):
     '''
     for row in teamlist:
         if teamname == row['name']:
-            break
+            return row
     else:
         addTeam (teamlist, teamname)
 
@@ -134,7 +147,26 @@ def updateTeamStats (teamlist, team1, score1, team2, score2):
                     else:
                         t['tied'] = t['tied'] + 1
 
+def printSummary(total_games, total_points):
+    avg_pts_game = float(total_points / total_games / 2)
+    print("The total number of games played is", total_games)
+    print("The total number of points scored is", total_points)
+    print("The average number of points scored per team per game is %0.3f" \
+                                                    % avg_pts_game)
+
 def main():
+    '''Define the command line arguments
+
+    '''
+    filename = sys.argv[1]
+    sport    = sys.argv[2]
+
+    '''Initialize totalpoints and totalgames to 0.
+
+    '''
+    totalpoints = 0
+    totalgames = 0
+
     '''Create a list called Schedule.  This list will contain
     dictionaries of games.
 
@@ -148,38 +180,22 @@ def main():
     TeamList = []
 
     '''Read in the scores file'''
-    f = open(sys.argv[1], 'r')
+    f = open(filename, 'r')
     try:
-        gameReader = csv.reader(f, delimiter='|')
+        fieldnames = ['date', 'team1', 'score1', 'team2', 'score2']
+        gameReader = csv.DictReader(f, delimiter='|', fieldnames=fieldnames)
         for game in gameReader:
-            g = {}
-            g['date'], g['team1'], g['score1'], g['team2'], g['score2'] = game
-            g['score1'] = int(g['score1'])
-            g['score2'] = int(g['score2'])
-            Schedule.append(g)
+            Schedule.append(game)
     finally:
         f.close()
 
+    totalgames = len(Schedule)
 
-    '''Initialize totalpoints and totalgames to 0.'''
-    totalpoints = 0
-    totalgames = 0
-
-    '''Get the sport from argument 2 on the command line'''
-    sport = sys.argv[2]
-
-    for g in Schedule:
+    for game in Schedule:
         '''We're getting the total points and the total games played'''
-        totalpoints = totalpoints + g['score1'] + g['score2']
-        totalgames = totalgames + 1
+        totalpoints = totalpoints + int(game['score1']) + int(game['score2'])
 
-        '''Add the field ratio to the game dictionary and call
-           calcGameRatio to get the result
-        '''
-        g['ratio'] = calcGameRatio(g['score1'], g['score2'], sport)
-
-        '''Update the stats for each of the game's participants'''
-        updateTeamStats(TeamList, g['team1'], g['score1'], g['team2'], g['score2'])
+    printSummary(totalgames, totalpoints)
 
 if __name__ == "__main__":
     main()
