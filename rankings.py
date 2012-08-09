@@ -4,13 +4,6 @@ import math
 import csv
 
 
-def totalPtsGame(score1, score2):
-    '''The totalPtsGame method returns the total points scored in the
-    game.
-
-    '''
-    return score1 + score2
-
 def adjustScore(score,sport):
     '''We adjust the score here to prevent a team from running up the
     score.
@@ -86,9 +79,9 @@ def initTeam (teamlist, name):
             'vtied': 0,
             'vpf': 0,
             'vpa': 0,
-            'grate': 0.0,
-            'rating': 50.0,
-            'sched': 0.0
+            'game_rate_accum': 0.0,
+            'power': 50.0,
+            'sched_strength': 0.0
             }
     teamlist.append(team)
 
@@ -194,5 +187,6 @@ def main():
 
     printSummary(totalgames, totalpoints)
     printRankings()
+
 if __name__ == "__main__":
     main()
