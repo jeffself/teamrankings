@@ -93,19 +93,6 @@ def addTeam (teamlist, name):
             }
     teamlist.append(team)
 
-def getTeamInfo(teamlist, teamname):
-    '''The getTeamInfo method provides the data for a team in the
-    teamlist. If the team that is being looked up is not in the teamlist,
-    the addTeam method is called to add the team to the list.
-    '''
-
-    for row in teamlist:
-        if teamname == row['name']:
-            return row
-        else:
-            addTeam(teamlist, teamname)
-            return row
-
 def lookupTeam (teamlist, teamname):
     '''The lookupTeam function is used to look up a team in the teamlist.
     If the team is not located, then we call the addTeam function.
@@ -113,9 +100,9 @@ def lookupTeam (teamlist, teamname):
     '''
     for row in teamlist:
         if teamname == row['name']:
-            return row
-    else:
-        addTeam (teamlist, teamname)
+            break
+        else:
+            addTeam (teamlist, teamname)
 
 def updateTeamStats (teamlist, team1, score1, team2, score2):
     '''The updateTeamStats function updates the won-lost-tied record and pts
@@ -155,31 +142,24 @@ def printSummary(total_games, total_points):
                                                     % avg_pts_game)
 
 def main():
-    '''Define the command line arguments
 
-    '''
+    # Define the command line arguments
     filename = sys.argv[1]
     sport    = sys.argv[2]
 
-    '''Initialize totalpoints and totalgames to 0.
-
-    '''
+    # Initialize totalpoints and totalgames to 0.
     totalpoints = 0
     totalgames = 0
 
-    '''Create a list called Schedule.  This list will contain
-    dictionaries of games.
-
-    '''
+    # Create a list called Schedule. This list will contain dictionaries
+    # of games.
     Schedule = []
 
-    '''Create a list called TeamList. This list will contain
-    dictionaries of teams.
-
-    '''
+    # Create a list called TeamList. This list will contain dictionaries
+    # of teams.
     TeamList = []
 
-    '''Read in the scores file'''
+    # Read in the scores file
     f = open(filename, 'r')
     try:
         fieldnames = ['date', 'team1', 'score1', 'team2', 'score2']
@@ -189,11 +169,17 @@ def main():
     finally:
         f.close()
 
+    # Get the total number of games played
     totalgames = len(Schedule)
 
     for game in Schedule:
-        '''We're getting the total points and the total games played'''
+        # Get the total number of points scored
         totalpoints = totalpoints + int(game['score1']) + int(game['score2'])
+
+        # Add the game_ratio to the game dictionary and calculate it
+        game['game_ratio'] = calcGameRatio(int(game['score1']),
+                                           int(game['score2']),
+                                           sport)
 
     printSummary(totalgames, totalpoints)
 
