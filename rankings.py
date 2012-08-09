@@ -141,6 +141,12 @@ def printSummary(total_games, total_points):
     print("The average number of points scored per team per game is %0.3f" \
                                                     % avg_pts_game)
 
+def printRankings():
+    '''The printRankings method returns the calculated rankings
+
+    '''
+    pass
+
 def main():
 
     # Define the command line arguments
@@ -172,8 +178,14 @@ def main():
     # Get the total number of games played
     totalgames = len(Schedule)
 
+
+    # Start reading the Schedule list. For each game, we will determine
+    # the two teams involved, and get their information and update it.
+    # We will also calculate the game_ratio and determine the expected
+    # game_ratio so that we can provide a way to determine the performance
+    # of each team in the game.
     for game in Schedule:
-        # Get the total number of points scored
+        # Calculate the total number of points scored
         totalpoints = totalpoints + int(game['score1']) + int(game['score2'])
 
         # Add the game_ratio to the game dictionary and calculate it
@@ -182,6 +194,6 @@ def main():
                                            sport)
 
     printSummary(totalgames, totalpoints)
-
+    printRankings()
 if __name__ == "__main__":
     main()
