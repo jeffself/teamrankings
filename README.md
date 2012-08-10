@@ -13,10 +13,11 @@ Usage
 
 datafile is the name of the file containing the games. Replace sport with football,
 basketball, or baseball.
+
 The format of the data file is pipe-delimited containing the following data for each row:
-date|team1|team1_score|team2|team2|score
-Example:
-09/05/2005|Chicago|24|Miami|21
+    date|team1|team1_score|team2|team2|score
+    Example:
+    09/05/2005|Chicago|24|Miami|21
 
 fbratings2.py
 -------------
@@ -28,9 +29,9 @@ Usage
     python fbratings.py datafile
 
 The format of the data file is space-delimited containing the following data for each row:
-date team1 team1_score team2 team2_score
-Example:
-'09/05/2005  Chicago 24 Miami 21'
+    date team1 team1_score team2 team2_score
+    Example:
+    '09/05/2005  Chicago 24 Miami 21'
 
 nflratings.c
 ------------
@@ -40,3 +41,7 @@ compiles under Linux however when compiled with the '-lm' option.
 Usage
 -----
     nflratings -i datafile -o outputfile
+The format of the data file is space-delimited containing the following data for each row:
+    date team1 team1_score team2 team2_score
+    Example:
+    '09/05/2005  Chicago 24 Miami 21'
