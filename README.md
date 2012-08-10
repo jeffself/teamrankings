@@ -48,3 +48,13 @@ The format of the data file is space-delimited containing the following data for
     date team1 team1_score team2 team2_score
     Example:
     '09/05/2005  Chicago 24 Miami 21'
+
+Data Files
+----------
+I have existing data files for pro football, college football, and Virginia high school football
+on Github now. Some are in space-delimited format and others have been migrated to pipe-delimited
+format.
+
+* [Pro Football scores](https://github.com/jeffself/profootballscores)
+* [College Football scores](https://github.com/jeffself/collegefootballscores)
+* [Virginia High School Football scores](https://github.com/jeffself/vahsfbscores)
