@@ -3,9 +3,13 @@ teamrankings
 
 Python app to rank a group of teams based on head to head matchups.
 
-Usage:
-To use the app, type the following at the command line:
-python rankings.py datafile sport
+rankings.py
+-----------
+
+Usage
+-----
+    python rankings.py datafile sport
+
 datafile is the name of the file containing the games. Replace sport with football,
 basketball, or baseball.
 The format of the data file is pipe-delimited containing the following data for each row:
