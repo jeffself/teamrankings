@@ -29,6 +29,7 @@ Usage
     python fbratings.py datafile
 
 The format of the data file is space-delimited containing the following data for each row:
+
     date team1 team1_score team2 team2_score
     Example:
     '09/05/2005  Chicago 24 Miami 21'
@@ -42,6 +43,7 @@ Usage
 -----
     nflratings -i datafile -o outputfile
 The format of the data file is space-delimited containing the following data for each row:
+
     date team1 team1_score team2 team2_score
     Example:
     '09/05/2005  Chicago 24 Miami 21'
