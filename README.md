@@ -49,6 +49,8 @@ The format of the data file is space-delimited containing the following data for
     Example:
     '09/05/2005  Chicago 24 Miami 21'
 
+This program is used for my [Pro Football Rankings](https://github.com/jeffself/profootballrankings)
+
 Data Files
 ----------
 I have existing data files for pro football, college football, and Virginia high school football
