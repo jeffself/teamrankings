@@ -15,6 +15,7 @@ datafile is the name of the file containing the games. Replace sport with footba
 basketball, or baseball.
 
 The format of the data file is pipe-delimited containing the following data for each row:
+
     date|team1|team1_score|team2|team2|score
     Example:
     09/05/2005|Chicago|24|Miami|21
