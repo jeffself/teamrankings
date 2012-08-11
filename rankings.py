@@ -93,17 +93,15 @@ def lookupTeam (teamlist, teamname):
     '''
     for row in teamlist:
         if teamname == row['name']:
-            print("Found %s" % row['name'])
-        else:
-            initTeam(teamlist, teamname)
+            break
+    else:
+        initTeam(teamlist, teamname)
 
 def updateTeamStats (teamlist, team1, score1, team2, score2):
     '''The updateTeamStats function updates the won-lost-tied record and pts
     scored and pts allowed for each of the two teams involved in a game.
 
     '''
-    lookupTeam (teamlist, team1)
-    lookupTeam (teamlist, team2)
     for t in teamlist:
         if team1 == t['name']:
             t['pf']    = t['pf'] + score1
@@ -189,12 +187,15 @@ def main():
         game['game_ratio'] = calcGameRatio(int(game['score1']),
                                            int(game['score2']),
                                            sport)
+        lookupTeam(TeamList, game['team1'])
+        lookupTeam(TeamList, game['team2'])
         updateTeamStats(TeamList, game['team1'], int(game['score1']), \
                                   game['team2'], int(game['score2']))
 
+    for team in TeamList:
+        print(team['name'])
+
     printSummary(totalgames, totalpoints)
-    for t in TeamList:
-        print(t['name'])
     printRankings(TeamList)
 
 if __name__ == "__main__":
