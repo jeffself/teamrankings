@@ -2,6 +2,7 @@ import sys
 import string
 import math
 import csv
+from operator import itemgetter
 
 
 def adjustScore(score,sport):
@@ -92,9 +93,9 @@ def lookupTeam (teamlist, teamname):
     '''
     for row in teamlist:
         if teamname == row['name']:
-            break
+            print("Found %s" % row['name'])
         else:
-            initTeam (teamlist, teamname)
+            initTeam(teamlist, teamname)
 
 def updateTeamStats (teamlist, team1, score1, team2, score2):
     '''The updateTeamStats function updates the won-lost-tied record and pts
@@ -133,17 +134,21 @@ def printSummary(total_games, total_points):
     print("The average number of points scored per team per game is %0.3f" \
                                                     % avg_pts_game)
 
-def printRankings():
+def printRankings(teamlist):
     '''The printRankings method returns the calculated rankings
 
     '''
-    pass
+    print ('%-28s %4s %5s %5s %5s %5s %8s %6s' % ('', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating', 'SOS'))
+    for team in teamlist:
+        print ('%-28s %4s %5s %5s %5s %5s %8.3f %6s' % (team['name'], team['won'], team['lost'], team['tied'], team['pf'], team['pa'], team['power'], team['sched_strength']))
+
 
 def main():
 
     # Define the command line arguments
-    filename = sys.argv[1]
+    infile   = sys.argv[1]
     sport    = sys.argv[2]
+    #outfile  = sys.argv[3]
 
     # Initialize totalpoints and totalgames to 0.
     totalpoints = 0
@@ -158,7 +163,7 @@ def main():
     TeamList = []
 
     # Read in the scores file
-    f = open(filename, 'r')
+    f = open(infile, 'r')
     try:
         fieldnames = ['date', 'team1', 'score1', 'team2', 'score2']
         gameReader = csv.DictReader(f, delimiter='|', fieldnames=fieldnames)
@@ -184,9 +189,13 @@ def main():
         game['game_ratio'] = calcGameRatio(int(game['score1']),
                                            int(game['score2']),
                                            sport)
+        updateTeamStats(TeamList, game['team1'], int(game['score1']), \
+                                  game['team2'], int(game['score2']))
 
     printSummary(totalgames, totalpoints)
-    printRankings()
+    for t in TeamList:
+        print(t['name'])
+    printRankings(TeamList)
 
 if __name__ == "__main__":
     main()
