@@ -132,6 +132,10 @@ def printSummary(total_games, total_points):
     print("The average number of points scored per team per game is %0.3f" \
                                                     % avg_pts_game)
 
+def updateTeamRatings(teamlist, totalgames):
+    '''The updateTeamRatings method updates each teams' power ratings.'''
+    pass
+
 def printRankings(teamlist):
     '''The printRankings method returns the calculated rankings
 
@@ -192,10 +196,10 @@ def main():
         updateTeamStats(TeamList, game['team1'], int(game['score1']), \
                                   game['team2'], int(game['score2']))
 
-    for team in TeamList:
-        print(team['name'])
 
     printSummary(totalgames, totalpoints)
+    print("Calculating Ratings ...")
+    updateTeamRatings(TeamList, totalgames)
     printRankings(TeamList)
 
 if __name__ == "__main__":
