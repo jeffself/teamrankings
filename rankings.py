@@ -64,7 +64,7 @@ def initTeam (teamlist, name):
     values are set to 0 except for the rating which is set to 50.0.
 
     '''
-    team = {'name': name,
+    teaminfo = {'name': name,
             'won': 0,
             'lost': 0,
             'tied': 0,
@@ -82,20 +82,24 @@ def initTeam (teamlist, name):
             'vpa': 0,
             'game_rate_accum': 0.0,
             'power': 50.0,
-            'sched_strength': 0.0
+            'sched_strength': 0.0,
+
             }
-    teamlist.append(team)
+    teamlist.append(teaminfo)
 
 def lookupTeam (teamlist, teamname):
     '''The lookupTeam function is used to look up a team in the teamlist.
     If the team is not located, then we call the addTeam function.
 
     '''
-    for row in teamlist:
-        if teamname == row['name']:
-            break
+    for team in teamlist:
+        if teamname == team['name']:
+            return team
     else:
         initTeam(teamlist, teamname)
+        for team in teamlist:
+            if teamname == team['name']:
+                return team
 
 def updateTeamStats (teamlist, team1, score1, team2, score2):
     '''The updateTeamStats function updates the won-lost-tied record and pts
@@ -125,20 +129,24 @@ def updateTeamStats (teamlist, team1, score1, team2, score2):
                     else:
                         t['tied'] = t['tied'] + 1
 
-def lookupTeamRate(team):
+def lookupTeamRate(teamlist, team):
     for t in teamlist:
         if team == t['name']:
-            return t['grate']
+            return t['game_rate_accum']
 
-def updateTeamRate(team, rate):
+def updateTeamRate(teamlist, team, rate):
     for t in teamlist:
         if team == t['name']:
-            t['grate'] = rate
+            t['game_rate_accum'] = rate
 
-def lookupTeamRating(team):
+def lookupTeamRating(teamlist, team):
     for t in teamlist:
         if team == t['name']:
-            return t['rating']
+            return t['power']
+
+def updateTeamRating(teamlist, kfactor):
+    for t in teamlist:
+        t['power'] = t['power'] + (kfactor * (t['game_rate_accum'] / (t['won'] + t['lost'] + t['tied'])))
 
 def printSummary(total_games, total_points):
     avg_pts_game = float(total_points / total_games / 2)
@@ -147,8 +155,8 @@ def printSummary(total_games, total_points):
     print("The average number of points scored per team per game is %0.3f" \
                                                     % avg_pts_game)
 
-def updateTeamRatings(teamlist, totalgames, schedule):
-    '''The updateTeamRatings method updates each teams' power ratings.'''
+def calcTeamRatings(teamlist, totalgames, schedule):
+    '''The calcTeamRatings method calculates each teams' power ratings.'''
     kfactor = 10.0
     tolerance = 1e-9
     stdDevRatio = 1.0
@@ -159,28 +167,28 @@ def updateTeamRatings(teamlist, totalgames, schedule):
     print("Calculating Power Ratings...")
     while ((stdDevRatioDiff > tolerance) and (iterations < max_iterations)):
         oldStdDevRatio = stdDevRatio
-        sum_grate = 0.0
+        total_game_rate_accum = 0.0
         for t in teamlist:
-            t['grate'] = 0.0
+            t['game_rate_accum'] = 0.0
         for g in schedule:
-            team1grate = lookupTeamRate(g['team1'])
-            team1rating = lookupTeamRating(g['team1'])
-            team2grate = lookupTeamRate(g['team2'])
-            team2rating = lookupTeamRating(g['team2'])
-            team1grate = team1grate + g['ratio'] - expectedGameResult(team1rating, team2rating, kfactor)
-            team2grate = team2grate + 1 - g['ratio'] - (1 - expectedGameResult(team1rating, team2rating, kfactor))
-            updateTeamRate(g['team1'], team1grate)
-            updateTeamRate(g['team2'], team2grate)
-            sum_grate = sum_grate + team1grate
-            # Calculate grate standard deviation
-            stdDevRatio = math.sqrt(((sum_grate * sum_grate) / totalgames))
-            stdDevRatioDiff = pow(oldStdDevRatio - stdDevRatio, 2)
-            iterations = iterations + 1
-            updateTeamRating(kfactor)
-        if (iterations > max_iterations):
-            print("Fatal error: Game ratios aren't converging")
-        else:
-            print("The scores were examined", iterations, "times.")
+            team1grate = lookupTeamRate(teamlist, g['team1'])
+            team1rating = lookupTeamRating(teamlist, g['team1'])
+            team2grate = lookupTeamRate(teamlist, g['team2'])
+            team2rating = lookupTeamRating(teamlist, g['team2'])
+            team1grate = team1grate + g['game_ratio'] - expectedGameResult(team1rating, team2rating, kfactor)
+            team2grate = team2grate + 1 - g['game_ratio'] - (1 - expectedGameResult(team1rating, team2rating, kfactor))
+            updateTeamRate(teamlist, g['team1'], team1grate)
+            updateTeamRate(teamlist, g['team2'], team2grate)
+            total_game_rate_accum = total_game_rate_accum + team1grate
+        # Calculate grate standard deviation
+        stdDevRatio = math.sqrt(((total_game_rate_accum * total_game_rate_accum) / totalgames))
+        stdDevRatioDiff = pow(oldStdDevRatio - stdDevRatio, 2)
+        iterations = iterations + 1
+        updateTeamRating(teamlist, kfactor)
+    if (iterations > max_iterations):
+        print("Fatal error: Game ratios aren't converging")
+    else:
+        print("The scores were examined", iterations, "times.")
 
 def printRankings(teamlist):
     '''The printRankings method returns the calculated rankings
@@ -237,6 +245,8 @@ def main():
         game['game_ratio'] = calcGameRatio(int(game['score1']),
                                            int(game['score2']),
                                            sport)
+        #team1info = lookupTeam(TeamList, game['team1'])
+        #team2info = lookupTeam(TeamList, game['team2'])
         lookupTeam(TeamList, game['team1'])
         lookupTeam(TeamList, game['team2'])
         updateTeamStats(TeamList, game['team1'], int(game['score1']), \
@@ -244,7 +254,7 @@ def main():
 
 
     printSummary(totalgames, totalpoints)
-    updateTeamRatings(TeamList, totalgames, Schedule)
+    calcTeamRatings(TeamList, totalgames, Schedule)
     printRankings(TeamList)
 
 if __name__ == "__main__":
