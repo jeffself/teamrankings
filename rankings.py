@@ -190,12 +190,18 @@ def calcTeamRatings(teamlist, totalgames, schedule):
     else:
         print("The scores were examined", iterations, "times.")
 
+def sortDictByDesc(list, key):
+    sortedlist = sorted(list, key=itemgetter('power'))
+    sortedlist.reverse()
+    return sortedlist
+
 def printRankings(teamlist):
     '''The printRankings method returns the calculated rankings
 
     '''
     print ('%-28s %4s %5s %5s %5s %5s %8s %6s' % ('', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating', 'SOS'))
-    for team in teamlist:
+    sortedlist = sortDictByDesc(teamlist, "power")
+    for team in sortedlist:
         print ('%-28s %4s %5s %5s %5s %5s %8.3f %6s' % (team['name'], team['won'], team['lost'], team['tied'], team['pf'], team['pa'], team['power'], team['sched_strength']))
 
 
