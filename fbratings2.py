@@ -13,7 +13,7 @@ def totalPtsGame (score1, score2):
 
 ###############################################################################
 # This returns the average points scored per game per team.                   #
-###############################################################################	
+###############################################################################
 def avgPtsGame (totalPts, totalGms):
 	return float(totalPts)/totalGms/2
 
@@ -89,7 +89,7 @@ def addTeam (name):
 ###############################################################################
 # This function is used to lookup a team in the teamlist.  If the team is not #
 # located, then we call the addTeam function.                                 #
-###############################################################################	
+###############################################################################
 def lookupTeam (teamname):
 
 	for row in teamlist:
@@ -98,7 +98,7 @@ def lookupTeam (teamname):
 	else:
 		addTeam (teamname)
 
-		
+
 ###############################################################################
 # This function updates the won-lost-tied record and points scored and points #
 # allowed for each of the two teams involved in a game.                       #
@@ -143,7 +143,7 @@ def lookupTeamRate (team):
 # an accumulated amount.  It gets reset to 0 each time score's are read.      #
 # After all scores have been read, the accumulated grate is used for changing #
 # a team's rating.                                                            #
-###############################################################################			
+###############################################################################
 def updateTeamRate (team, rate):
 	for t in teamlist:
 		if team == t['name']:
@@ -201,7 +201,7 @@ def calcTeamRatings(totalgames):
 			team2grate = team2grate + 1 - g['ratio'] - (1 - expectedGameResult(team1rating, team2rating, Kfactor))
 			updateTeamRate (g['team1'], team1grate)
 			updateTeamRate (g['team2'], team2grate)
-			sum_grate = sum_grate + team1grate	
+			sum_grate = sum_grate + team1grate
 		# Calculate grate standard deviation
 		stdDevRatio = math.sqrt(((sum_grate * sum_grate) / totalgames))
 		stdDevRatioDiff = pow(oldstdDevRatio - stdDevRatio, 2)
@@ -258,7 +258,7 @@ file.close()
 ###############################################################################
 # Initialize totalpoints and totalgames to 0.  These variables will be used   #
 # to calculate average points scored per game per team.                       #
-###############################################################################	
+###############################################################################
 totalpoints = 0
 totalgames = 0
 
@@ -266,14 +266,14 @@ for g in schedule:
 	# Get the total number of points scored for the game and add to totalpoints
 	#totalpoints = totalpoints + totalPtsGame (g['score1'], g['score2'])
 	totalpoints = totalpoints + g['score1'] + g['score2']
-  
+
 	# Add the field ratio to the game dictionary and call calcGameRatio to get
     # the result.
 	g['ratio'] = calcGameRatio (g['score1'], g['score2'])
 
 	# Update the won-lost-tied record and points scored and points allowed for
 	# the two teams involved in the game.
-	updateTeamStats (g['team1'], g['score1'], g['team2'], g['score2'])
+	updateTeamStats(g['team1'], g['score1'], g['team2'], g['score2'])
 
 	# Update the totalgames played
 	totalgames = totalgames + 1

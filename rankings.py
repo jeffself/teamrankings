@@ -125,6 +125,21 @@ def updateTeamStats (teamlist, team1, score1, team2, score2):
                     else:
                         t['tied'] = t['tied'] + 1
 
+def lookupTeamRate(team):
+    for t in teamlist:
+        if team == t['name']:
+            return t['grate']
+
+def updateTeamRate(team, rate):
+    for t in teamlist:
+        if team == t['name']:
+            t['grate'] = rate
+
+def lookupTeamRating(team):
+    for t in teamlist:
+        if team == t['name']:
+            return t['rating']
+
 def printSummary(total_games, total_points):
     avg_pts_game = float(total_points / total_games / 2)
     print("The total number of games played is", total_games)
@@ -132,9 +147,40 @@ def printSummary(total_games, total_points):
     print("The average number of points scored per team per game is %0.3f" \
                                                     % avg_pts_game)
 
-def updateTeamRatings(teamlist, totalgames):
+def updateTeamRatings(teamlist, totalgames, schedule):
     '''The updateTeamRatings method updates each teams' power ratings.'''
-    pass
+    kfactor = 10.0
+    tolerance = 1e-9
+    stdDevRatio = 1.0
+    max_iterations = 25000
+    stdDevRatioDiff = 100.0
+    oldStdDevRatio = 1.0
+    iterations = 0
+    print("Calculating Power Ratings...")
+    while ((stdDevRatioDiff > tolerance) and (iterations < max_iterations)):
+        oldStdDevRatio = stdDevRatio
+        sum_grate = 0.0
+        for t in teamlist:
+            t['grate'] = 0.0
+        for g in schedule:
+            team1grate = lookupTeamRate(g['team1'])
+            team1rating = lookupTeamRating(g['team1'])
+            team2grate = lookupTeamRate(g['team2'])
+            team2rating = lookupTeamRating(g['team2'])
+            team1grate = team1grate + g['ratio'] - expectedGameResult(team1rating, team2rating, kfactor)
+            team2grate = team2grate + 1 - g['ratio'] - (1 - expectedGameResult(team1rating, team2rating, kfactor))
+            updateTeamRate(g['team1'], team1grate)
+            updateTeamRate(g['team2'], team2grate)
+            sum_grate = sum_grate + team1grate
+            # Calculate grate standard deviation
+            stdDevRatio = math.sqrt(((sum_grate * sum_grate) / totalgames))
+            stdDevRatioDiff = pow(oldStdDevRatio - stdDevRatio, 2)
+            iterations = iterations + 1
+            updateTeamRating(kfactor)
+        if (iterations > max_iterations):
+            print("Fatal error: Game ratios aren't converging")
+        else:
+            print("The scores were examined", iterations, "times.")
 
 def printRankings(teamlist):
     '''The printRankings method returns the calculated rankings
@@ -198,8 +244,7 @@ def main():
 
 
     printSummary(totalgames, totalpoints)
-    print("Calculating Ratings ...")
-    updateTeamRatings(TeamList, totalgames)
+    updateTeamRatings(TeamList, totalgames, Schedule)
     printRankings(TeamList)
 
 if __name__ == "__main__":
