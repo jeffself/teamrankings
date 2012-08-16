@@ -1,3 +1,4 @@
+from __future__ import print_function, division
 import sys
 import string
 import math
@@ -212,6 +213,10 @@ def main():
     sport    = sys.argv[2]
     #outfile  = sys.argv[3]
 
+    with open(infile,"r") as source:
+        process_rankings( source, sport )
+
+def process_rankings( source, sport ):
     # Initialize totalpoints and totalgames to 0.
     totalpoints = 0
     totalgames = 0
@@ -225,14 +230,10 @@ def main():
     TeamList = []
 
     # Read in the scores file
-    f = open(infile, 'r')
-    try:
-        fieldnames = ['date', 'team1', 'score1', 'team2', 'score2']
-        gameReader = csv.DictReader(f, delimiter='|', fieldnames=fieldnames)
-        for game in gameReader:
-            Schedule.append(game)
-    finally:
-        f.close()
+    fieldnames = ['date', 'team1', 'score1', 'team2', 'score2']
+    gameReader = csv.DictReader(source, delimiter='|', fieldnames=fieldnames)
+    for game in gameReader:
+        Schedule.append(game)
 
     # Get the total number of games played
     totalgames = len(Schedule)
