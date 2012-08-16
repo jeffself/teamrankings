@@ -217,6 +217,10 @@ def main():
         process_rankings( source, sport )
 
 def process_rankings( source, sport ):
+    totalgames, totalpoints, TeamList = load( source, sport )
+    report( totalgames, totalpoints, TeamList )
+
+def load( source, sport ):
     # Initialize totalpoints and totalgames to 0.
     totalpoints = 0
     totalgames = 0
@@ -259,9 +263,11 @@ def process_rankings( source, sport ):
         updateTeamStats(TeamList, game['team1'], int(game['score1']), \
                                   game['team2'], int(game['score2']))
 
-
-    printSummary(totalgames, totalpoints)
     calcTeamRatings(TeamList, totalgames, Schedule)
+    return totalgames, totalpoints, TeamList
+
+def report( totalgames, totalpoints, TeamList ):
+    printSummary(totalgames, totalpoints)
     printRankings(TeamList)
 
 if __name__ == "__main__":
