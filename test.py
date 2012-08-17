@@ -23,7 +23,7 @@ class Test_Reports( unittest.TestCase ):
         self.assertEqual( 0, sortedlist[0].tied )
         self.assertEqual( 107, sortedlist[0].pf )
         self.assertEqual( 14, sortedlist[0].pa )
-        self.assertAlmostEqual( 67.60850400936893, sortedlist[0].power )
+        self.assertAlmostEqual( 67.90649022216157, sortedlist[0].power )
 
     def test_should_format_summary( self ):
         output_report = io.StringIO()
