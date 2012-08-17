@@ -198,7 +198,10 @@ def calcTeamRatings(teamlist, totalgames, schedule):
             team2grate = team2grate + 1 - g.game_ratio - (1 - expectedGameResult(team1rating, team2rating, kfactor))
             teamlist[g.team1].game_rate_accum= team1grate
             teamlist[g.team2].game_rate_accum= team2grate
-            total_game_rate_accum = total_game_rate_accum + team1grate
+            if team1grate > team2grate:
+                total_game_rate_accum = total_game_rate_accum + team1grate
+            else:
+                total_game_rate_accum = total_game_rate_accum + team2grate
         # Calculate grate standard deviation
         stdDevRatio = math.sqrt(((total_game_rate_accum * total_game_rate_accum) / totalgames))
         stdDevRatioDiff = (oldStdDevRatio - stdDevRatio) ** 2
