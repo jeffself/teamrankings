@@ -347,8 +347,8 @@ def main():
     parser.set_defaults( sport=SportFactor() )
     parser.add_argument('file_list', metavar='History File', type=open, nargs='+',
                         help='Files with Game History' )
-    parser.add_argument('--output', required=False, default='rankings.txt' )
-    parser.add_argument('output_file', metavar='Rankings File', type=open, nargs='+',
+    parser.add_argument('--output', required=False )
+    parser.add_argument('output_file', metavar='Rankings File', type=open, nargs='?',
                         help='The rankings file' )
     args = parser.parse_args()
 
