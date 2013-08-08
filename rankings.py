@@ -3,7 +3,7 @@
 Synopsis
 ==========
 
-    rankings.py [-sport] [-d '|'] scores.txt
+    rankings.py [-sport] [-d '|'] scores.txt -o rankings.txt
 
 Options
 ==========
@@ -20,6 +20,9 @@ titles.  In this case, the column order must be date, team1, score1, team2, scor
 For scores extracted from web sites, a separate parser should be used
 to create the required CSV file
 
+A "-o" option specifies the output file. This option generates an output file
+containing the rankings.
+
 Arguments
 ===========
 
@@ -30,10 +33,13 @@ Each row in the file has results of a game:
     'date', 'team1', 'score1', 'team2', 'score2'
 
 This is used to compute a "power" ranking that compares their total share
-of points and games with a projected share.  The projection model is iterated until
-it matches the actual outcomes.
+of points and games with a projected share.  The projection model is iterated
+until it matches the actual outcomes.
 
-This is a Python3.2 application.
+rankings.txt is a text file that is optional. It is a generated text file
+containing the generated rankings.
+
+This is a Python 3.3 application.
 """
 
 import sys
@@ -340,7 +346,10 @@ def main():
     parser.add_argument('-d', dest='format', action='store' )
     parser.set_defaults( sport=SportFactor() )
     parser.add_argument('file_list', metavar='History File', type=open, nargs='+',
-                       help='Files with game history')
+                        help='Files with Game History' )
+    parser.add_argument('--output', required=False, default='rankings.txt' )
+    parser.add_argument('output_file', metavar='Rankings File', type=open, nargs='+',
+                        help='The rankings file' )
     args = parser.parse_args()
 
     if args.format is None:
