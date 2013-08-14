@@ -236,11 +236,13 @@ def printRankings(args, teamlist):
     fmt= "{0.name:40s} {0.won:4d} {0.lost:5d} {0.tied:5d} {0.pf:5d} {0.pa:5d} {0.power:8.3f}"
     sortedlist = sortDictByPower(teamlist.values())
     if args.output:
-        f = open(args.output, 'w')
-        f.write('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'.format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating'))
-        f.write('\n')
-        for team in sortedlist:
-            f.write('{0:4d}'.format(sortedlist.index(team) + 1) + ' ' + fmt.format(team) + '\n')
+        with open(args.output, 'w') as f:
+        #f = open(args.output, 'w')
+            f.write('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'.format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating'))
+            f.write('\n')
+            for team in sortedlist:
+                f.write('{0:4d}'.format(sortedlist.index(team) + 1) + ' ' + fmt.format(team) + '\n')
+        f.close()
     else:
         print ('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'.format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating'))
         for team in sortedlist:
