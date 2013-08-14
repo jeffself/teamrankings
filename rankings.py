@@ -3,7 +3,7 @@
 Synopsis
 ==========
 
-    rankings.py [-sport] [-d '|'] scores.txt -o rankings.txt
+    rankings.py [-sport] [-d '|'] scores.txt --output rankings.txt
 
 Options
 ==========
@@ -20,7 +20,7 @@ titles.  In this case, the column order must be date, team1, score1, team2, scor
 For scores extracted from web sites, a separate parser should be used
 to create the required CSV file
 
-A "-o" option specifies the output file. This option generates an output file
+A "--output" option specifies the output file. This option generates an output file
 containing the rankings.
 
 Arguments
@@ -230,14 +230,21 @@ def sortDictByPower(teamlist):
     sortedlist = sorted(teamlist, key=lambda t: t.power, reverse=True)
     return sortedlist
 
-def printRankings(teamlist):
+def printRankings(args, teamlist):
     '''The printRankings method returns the calculated rankings
     '''
-    fmt= "{0.name:40s} {0.won:4d} {0.lost:5d} {0.tied:5d} {0.pf:5d} {0.pa:5d} {0.power:8.3f} {0.sched_strength:6.1f}"
-    print ('{:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s} {:>6s}'.format('', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating', 'SOS'))
+    fmt= "{0.name:40s} {0.won:4d} {0.lost:5d} {0.tied:5d} {0.pf:5d} {0.pa:5d} {0.power:8.3f}"
     sortedlist = sortDictByPower(teamlist.values())
-    for team in sortedlist:
-        print(fmt.format(team))
+    if args.output:
+        f = open(args.output, 'w')
+        f.write('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'.format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating'))
+        f.write('\n')
+        for team in sortedlist:
+            f.write('{0:4d}'.format(sortedlist.index(team) + 1) + ' ' + fmt.format(team) + '\n')
+    else:
+        print ('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'.format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating'))
+        for team in sortedlist:
+            print('{0:4d}'.format(sortedlist.index(team) + 1) + ' ' + fmt.format(team))
 
 class HistoryReader:
     """Abstract superclass for History readers."""
@@ -330,10 +337,10 @@ def load( source, sport ):
     # Return values for display.
     return totalgames, totalpoints, TeamList
 
-def report( totalgames, totalpoints, TeamList ):
+def report( args, totalgames, totalpoints, TeamList ):
     """Produce the two printed reports."""
     printSummary(totalgames, totalpoints)
-    printRankings(TeamList)
+    printRankings(args, TeamList)
 
 def main():
     """Parse command-line arguments, run the :func:`process_rankings` function.
@@ -361,16 +368,16 @@ def main():
 
     for source in args.file_list:
         reader= reader_class( source )
-        process_rankings( reader, args.sport )
+        process_rankings( args, reader, args.sport )
 
-def process_rankings( source, sport ):
+def process_rankings( args, source, sport ):
     """The default command-line app: load and report."""
 
     # Step 1: Load the data from the file, compute the rankings.
     totalgames, totalpoints, TeamList = load( source, sport )
 
     # Step 2: Print a report.
-    report( totalgames, totalpoints, TeamList )
+    report( args, totalgames, totalpoints, TeamList )
 
 if __name__ == "__main__":
     main()
