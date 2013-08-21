@@ -1,58 +1,50 @@
 teamrankings
 ============
 
-A collection of apps for rankings sports teams.
+Synopsis
+==========
 
-rankings.py
------------
-Python app to rank a group of teams based on head to head matchups.
+    rankings.py [-sport] [-d '|'] scores.txt --output rankings.txt
 
-Usage
------
-    python rankings.py datafile sport
+Options
+==========
 
-datafile is the name of the file containing the games. Replace sport with football,
-basketball, or baseball.
+The "-sport" option is either ``-football`` or ``-basketball`` to properly
+normalize scores for these sports.  Most other sports don't require this
+option.
 
-The format of the data file is pipe-delimited containing the following data for each row:
+A "-d" option specifies the file format. The default is CSV with column
+titles.  A value of ``|`` (must be quoted to protect from the shell)
+is a common alternative to specify pipe-delimited data with no column
+titles.  In this case, the column order must be date, team1, score1, team2, score2.
 
-    date|team1|team1_score|team2|team2|score
-    Example:
-    09/05/2005|Chicago|24|Miami|21
+For scores extracted from web sites, a separate parser should be used
+to create the required CSV file
 
-fbratings2.py
--------------
-My first stab at rewriting my C app as a Python app. This is no longer maintained. I have it
-here for reference while I work on rankings.py.
+A "--output" option specifies the output file. This option generates an output file
+containing the rankings.
 
-Usage
------
-    python fbratings.py datafile
+Arguments
+===========
 
-The format of the data file is space-delimited containing the following data for each row:
+scores.txt is a CSV file.  The -d option allows different formats.
 
-    date team1 team1_score team2 team2_score
-    Example:
-    '09/05/2005  Chicago 24 Miami 21'
+Each row in the file has results of a game:
 
-nflratings.c
-------------
-The original C version used in all my rankings. I can no longer compile it under OS X. It still
-compiles under Linux however when compiled with the '-lm' option.
+    'date', 'team1', 'score1', 'team2', 'score2'
 
-Usage
------
-    nflratings -i datafile -o outputfile
-The format of the data file is space-delimited containing the following data for each row:
+This is used to compute a "power" ranking that compares their total share
+of points and games with a projected share.  The projection model is iterated
+until it matches the actual outcomes.
 
-    date team1 team1_score team2 team2_score
-    Example:
-    '09/05/2005  Chicago 24 Miami 21'
+Requirements
+============
 
-This program is used for my [Pro Football Rankings](https://github.com/jeffself/profootballrankings)
+This application has been tested and runs on Python 3.3. For any other version of Python, your mileage may vary.
 
 Data Files
-----------
+==========
+
 I have existing data files for pro football, college football, and Virginia high school football
 on Github now. Some are in space-delimited format and others have been migrated to pipe-delimited
 format.
