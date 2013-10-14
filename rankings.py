@@ -15,13 +15,14 @@ option.
 A "-d" option specifies the file format. The default is CSV with column
 titles.  A value of ``|`` (must be quoted to protect from the shell)
 is a common alternative to specify pipe-delimited data with no column
-titles.  In this case, the column order must be date, team1, score1, team2, score2.
+titles.  In this case, the column order must be date, team1, score1,
+team2, score2.
 
 For scores extracted from web sites, a separate parser should be used
 to create the required CSV file
 
-A "--output" option specifies the output file. This option generates an output file
-containing the rankings.
+A "--output" option specifies the output file. This option generates an
+output file containing the rankings.
 
 Arguments
 ===========
@@ -42,8 +43,6 @@ containing the generated rankings.
 This is a Python 3.3 application.
 """
 
-import sys
-import string
 import math
 import csv
 from collections import namedtuple
@@ -52,7 +51,9 @@ import argparse
 # Raw input is a History record.
 # Could be read via some kind of CSV reader, but numerous other
 # formats are possible.
-History= namedtuple( 'History', ['date', 'team1', 'score1', 'team2', 'score2'] )
+
+History = namedtuple('History', ['date', 'team1', 'score1', 'team2', 'score2'])
+
 
 class SportFactor:
     """Adjustments to normalize points into scoring opportunities.
@@ -61,14 +62,16 @@ class SportFactor:
     It's used to create instances of :class:`Game` from the raw
     :class:`History` data.
     """
-    score_factor= 100.0
-    max_score= 1.0
+    score_factor = 100.0
+    max_score = 1.0
+
     def adjustScore(self, score):
         '''We adjust the score here to prevent a team from running up the
         score.
         '''
         adjScore = score - (score * score)/self.score_factor
         return adjScore
+
     def gameRatio(self, score1, score2):
         '''The gameRatio method is used to determine the actual outcome
         of the game in a format that is equivalent to the expectedGameResult.
@@ -83,56 +86,62 @@ class SportFactor:
         The winning team also gains an additional 1 point as a bonus
         whereas if the teams tie each team receives an additional 0.5 points.
         '''
-        adjScore1 = pow((self.adjustScore(score1))/self.max_score,2)
-        adjScore2 = pow((self.adjustScore(score2))/self.max_score,2)
+        adjScore1 = pow((self.adjustScore(score1))/self.max_score, 2)
+        adjScore2 = pow((self.adjustScore(score2))/self.max_score, 2)
         gameRatio = (adjScore1 + 1.0) / (adjScore1 + adjScore2 + 2.0)
         if score1 > score2:
             gameRatio = gameRatio + 1.0
         elif score1 == score2:
             gameRatio = gameRatio + 0.5
         elif score1 < score2:
-            pass # No adjustment for a loss
+            pass  # No adjustment for a loss
         else:
-            raise Exception( "Horrifying Design Error" )
+            raise Exception("Horrifying Design Error")
         return gameRatio * 0.5
 
-class Football( SportFactor ):
-    """Football scoring adjustments."""
-    score_factor= 250.0
-    max_score= 6.0
 
-class Basketball( SportFactor ):
+class Football(SportFactor):
+    """Football scoring adjustments."""
+    score_factor = 250.0
+    max_score = 6.0
+
+
+class Basketball(SportFactor):
     """Basketball scoring adjustments."""
-    score_factor= 750.0
-    max_score= 3.0
+    score_factor = 750.0
+    max_score = 3.0
+
 
 class Team:
     """An individual team.  A name, plus a summary of wins, losses and points
     scored."""
-    def __init__( self, name ):
-        self.name= name
-        self.won= 0
-        self.lost= 0
-        self.tied= 0
-        self.pf= 0
-        self.pa= 0
-        self.hwon= 0
-        self.hlost= 0
-        self.htied= 0
-        self.hpf= 0
-        self.hpa= 0
-        self.vwon= 0
-        self.vlost= 0
-        self.vtied= 0
-        self.vpf= 0
-        self.vpa= 0
-        self.game_rate_accum= 0.0
-        self.power= 50.0
-        self.sched_strength= 0.0
-    def update_stats( self, score, opponent ):
-        """For an individual game, record the win/loss and score for this game."""
-        self.pf    = self.pf + score
-        self.pa    = self.pa + opponent
+    def __init__(self, name):
+        self.name = name
+        self.won = 0
+        self.lost = 0
+        self.tied = 0
+        self.pf = 0
+        self.pa = 0
+        self.hwon = 0
+        self.hlost = 0
+        self.htied = 0
+        self.hpf = 0
+        self.hpa = 0
+        self.vwon = 0
+        self.vlost = 0
+        self.vtied = 0
+        self.vpf = 0
+        self.vpa = 0
+        self.game_rate_accum = 0.0
+        self.power = 50.0
+        self.sched_strength = 0.0
+
+    def update_stats(self, score, opponent):
+        """
+        For an individual game, record the win/loss and score for this game.
+        """
+        self.pf = self.pf + score
+        self.pa = self.pa + opponent
         if score > opponent:
             self.won = self.won + 1
         elif score < opponent:
@@ -140,7 +149,8 @@ class Team:
         elif score == opponent:
             self.tied = self.tied + 1
         else:
-            raise Exception( "Horrifying Design Error" )
+            raise Exception("Horrifying Design Error")
+
 
 class Game:
     """An individual game, hased on a History object read from a source.
@@ -148,16 +158,18 @@ class Game:
     The game ratio is computed based on the sport.  Football and Basketball
     have a normalization factor applied.
     """
-    default_sport= SportFactor()
-    def __init__( self, history, sport=None ):
-        self.date= history.date
-        self.team1= history.team1
-        self.score1= int(history.score1)
-        self.team2= history.team2
-        self.score2= int(history.score2)
+    default_sport = SportFactor()
+
+    def __init__(self, history, sport=None):
+        self.date = history.date
+        self.team1 = history.team1
+        self.score1 = int(history.score1)
+        self.team2 = history.team2
+        self.score2 = int(history.score2)
         if sport is None:
-            sport= self.default_sport
-        self.game_ratio= sport.gameRatio( self.score1, self.score2 )
+            sport = self.default_sport
+        self.game_ratio = sport.gameRatio(self.score1, self.score2)
+
 
 def expectedGameResult(rating1, rating2, x):
     '''The expectedGameResult method is used to determine an expected
@@ -176,9 +188,13 @@ def expectedGameResult(rating1, rating2, x):
     expRatio = (1 / (1 + pow(10, (rating2 - rating1) / x)))
     return expRatio
 
+
 def updateTeamRating(teamlist, kfactor):
     for t in teamlist.values():
-        t.power = t.power + (kfactor * (t.game_rate_accum / (t.won + t.lost + t.tied)))
+        t.power = t.power + \
+            (kfactor *
+                (t.game_rate_accum / (t.won + t.lost + t.tied)))
+
 
 def calcTeamRatings(teamlist, totalgames, schedule):
     '''The calcTeamRatings method calculates each teams' power ratings.'''
@@ -200,16 +216,19 @@ def calcTeamRatings(teamlist, totalgames, schedule):
             team1rating = teamlist[g.team1].power
             team2grate = teamlist[g.team2].game_rate_accum
             team2rating = teamlist[g.team2].power
-            team1grate = team1grate + g.game_ratio - expectedGameResult(team1rating, team2rating, kfactor)
-            team2grate = team2grate + 1 - g.game_ratio - (1 - expectedGameResult(team1rating, team2rating, kfactor))
-            teamlist[g.team1].game_rate_accum= team1grate
-            teamlist[g.team2].game_rate_accum= team2grate
+            team1grate = team1grate + g.game_ratio - \
+                expectedGameResult(team1rating, team2rating, kfactor)
+            team2grate = team2grate + 1 - g.game_ratio - \
+                (1 - expectedGameResult(team1rating, team2rating, kfactor))
+            teamlist[g.team1].game_rate_accum = team1grate
+            teamlist[g.team2].game_rate_accum = team2grate
             if team1grate > team2grate:
                 total_game_rate_accum = total_game_rate_accum + team1grate
             else:
                 total_game_rate_accum = total_game_rate_accum + team2grate
         # Calculate grate standard deviation
-        stdDevRatio = math.sqrt(((total_game_rate_accum * total_game_rate_accum) / totalgames))
+        stdDevRatio = math.sqrt(((
+            total_game_rate_accum * total_game_rate_accum) / totalgames))
         stdDevRatioDiff = (oldStdDevRatio - stdDevRatio) ** 2
         iterations = iterations + 1
         # Revise ratings
@@ -217,76 +236,94 @@ def calcTeamRatings(teamlist, totalgames, schedule):
     if (iterations > max_iterations):
         print("Fatal error: Game ratios aren't converging")
     else:
-        print("The scores were examined", iterations, "times.")
+        print('The scores were examined {} times.'.format(iterations))
+
 
 def printSummary(total_games, total_points):
     avg_pts_game = float(total_points / total_games / 2)
-    print("The total number of games played is", total_games)
-    print("The total number of points scored is", total_points)
-    print("The average number of points scored per team per game is %0.3f"
-                                                    % avg_pts_game)
+    print('The total number of games played is {}'.format(total_games))
+    print('The total number of points scored is {}'.format(total_points))
+    print('The average number of points scored per team per game is {0:.3f}'
+          .format(avg_pts_game))
+
 
 def sortDictByPower(teamlist):
     sortedlist = sorted(teamlist, key=lambda t: t.power, reverse=True)
     return sortedlist
 
+
 def printRankings(args, teamlist):
     '''The printRankings method returns the calculated rankings
     '''
-    fmt= "{0.name:40s} {0.won:4d} {0.lost:5d} {0.tied:5d} {0.pf:5d} {0.pa:5d} {0.power:8.3f}"
+    fmt = "{0.name:40s} {0.won:4d} {0.lost:5d} {0.tied:5d} {0.pf:5d} \
+            {0.pa:5d} {0.power:8.3f}"
     sortedlist = sortDictByPower(teamlist.values())
     if args.output:
         with open(args.output, 'w') as f:
-            f.write('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'.format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating'))
+            f.write('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'
+                    .format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA',
+                            'Rating'))
             f.write('\n')
             for team in sortedlist:
-                f.write('{0:4d}'.format(sortedlist.index(team) + 1) + ' ' + fmt.format(team) + '\n')
+                f.write('{0:4d}'.format(sortedlist.index(team) + 1) + ' ' +
+                        fmt.format(team) + '\n')
         f.close()
     else:
-        print ('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'.format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating'))
+        print('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'
+              .format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating')
+              )
         for team in sortedlist:
-            print('{0:4d}'.format(sortedlist.index(team) + 1) + ' ' + fmt.format(team))
+            print('{0:4d}'.format(sortedlist.index(team) + 1) + ' ' +
+                  fmt.format(team))
+
 
 class HistoryReader:
     """Abstract superclass for History readers."""
-    def __init__( self, source ):
+    def __init__(self, source):
         """Initialize the source.
 
         :param:`source` an iterable file-like source of data.
         """
         raise NotImplementedError
-    def __iter__( self ):
+
+    def __iter__(self):
         """Yield History instances from the source."""
         raise NotImplementedError
 
-class CSVHistoryReader( HistoryReader ):
+
+class CSVHistoryReader(HistoryReader):
     """Create History instances from CSV files with proper column names
     in the first row.
 
     Column names must include: 'date', 'team1', 'score1', 'team2', 'score2'
     in any order.
     """
-    def __init__( self, source ):
+    def __init__(self, source):
         self.reader = csv.DictReader(source)
-    def __iter__( self ):
+
+    def __iter__(self):
         for row in self.reader:
             yield History(**row)
 
-class PipeFormatHistoryReader( HistoryReader ):
+
+class PipeFormatHistoryReader(HistoryReader):
     """Create History instances from pipe-formatted files.
 
-    In this case, column names are assumed which **must** match the :class:`History`
-    class fields.
+    In this case, column names are assumed which **must** match the
+    :class:`History` class fields.
 
     Specifically: 'date', 'team1', 'score1', 'team2', 'score2'.
     """
-    def __init__( self, source ):
-        self.reader = csv.DictReader(source, delimiter='|', fieldnames=History._fields)
-    def __iter__( self ):
+    def __init__(self, source):
+        self.reader = csv.DictReader(source, delimiter='|',
+                                     fieldnames=History._fields)
+
+    def __iter__(self):
         for row in self.reader:
             yield History(**row)
 
-def load( source, sport ):
+
+def load(source, sport):
     """Load the TeamList and some totals.
 
     :param:`source` is an iterable source of History instances.  Usually
@@ -312,7 +349,7 @@ def load( source, sport ):
     for history in source:
 
         # Create the Game, including the game_ratio, based on History.
-        game= Game( history, sport )
+        game = Game(history, sport)
 
         # Add the game to the Schedule.
         Schedule.append(game)
@@ -326,8 +363,8 @@ def load( source, sport ):
 
         #Update the won-lost-tied record and pts
         #scored and pts allowed for each of the two teams involved in a game.
-        team1.update_stats( game.score1, game.score2 )
-        team2.update_stats( game.score2, game.score1 )
+        team1.update_stats(game.score1, game.score2)
+        team2.update_stats(game.score2, game.score1)
 
     # Get the total number of games played.
     totalgames = len(Schedule)
@@ -338,47 +375,50 @@ def load( source, sport ):
     # Return values for display.
     return totalgames, totalpoints, TeamList
 
-def report( args, totalgames, totalpoints, TeamList ):
+
+def report(args, totalgames, totalpoints, TeamList):
     """Produce the two printed reports."""
     printSummary(totalgames, totalpoints)
     printRankings(args, TeamList)
+
 
 def main():
     """Parse command-line arguments, run the :func:`process_rankings` function.
     """
     parser = argparse.ArgumentParser(description='Rankings')
     parser.add_argument('-football', dest='sport', action='store_const',
-                       const=Football(), )
+                        const=Football())
     parser.add_argument('-basketball', dest='sport', action='store_const',
-                       const=Basketball(), )
-    parser.add_argument('-d', dest='format', action='store' )
-    parser.set_defaults( sport=SportFactor() )
-    parser.add_argument('file_list', metavar='History File', type=open, nargs='+',
-                        help='Files with Game History' )
-    parser.add_argument('--output', required=False )
-    parser.add_argument('output_file', metavar='Rankings File', type=open, nargs='?',
-                        help='The rankings file' )
+                        const=Basketball())
+    parser.add_argument('-d', dest='format', action='store')
+    parser.set_defaults(sport=SportFactor())
+    parser.add_argument('file_list', metavar='History File', type=open,
+                        nargs='+', help='Files with Game History')
+    parser.add_argument('--output', required=False)
+    parser.add_argument('output_file', metavar='Rankings File', type=open,
+                        nargs='?', help='The rankings file')
     args = parser.parse_args()
 
     if args.format is None:
-        reader_class= CSVHistoryReader
+        reader_class = CSVHistoryReader
     elif args.format == '|':
-        reader_class= PipeFormatHistoryReader
+        reader_class = PipeFormatHistoryReader
     else:
-        raise Exception( "Unknown -d {0}".format(args.format) )
+        raise Exception("Unknown -d {0}".format(args.format))
 
     for source in args.file_list:
-        reader= reader_class( source )
-        process_rankings( args, reader, args.sport )
+        reader = reader_class(source)
+        process_rankings(args, reader, args.sport)
 
-def process_rankings( args, source, sport ):
+
+def process_rankings(args, source, sport):
     """The default command-line app: load and report."""
 
     # Step 1: Load the data from the file, compute the rankings.
-    totalgames, totalpoints, TeamList = load( source, sport )
+    totalgames, totalpoints, TeamList = load(source, sport)
 
     # Step 2: Print a report.
-    report( args, totalgames, totalpoints, TeamList )
+    report(args, totalgames, totalpoints, TeamList)
 
 if __name__ == "__main__":
     main()
