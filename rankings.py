@@ -101,20 +101,24 @@ class SportFactor:
 
 
 class Football(SportFactor):
+
     """Football scoring adjustments."""
     score_factor = 250.0
     max_score = 6.0
 
 
 class Basketball(SportFactor):
+
     """Basketball scoring adjustments."""
     score_factor = 750.0
     max_score = 3.0
 
 
 class Team:
+
     """An individual team.  A name, plus a summary of wins, losses and points
     scored."""
+
     def __init__(self, name):
         self.name = name
         self.won = 0
@@ -153,6 +157,7 @@ class Team:
 
 
 class Game:
+
     """An individual game, hased on a History object read from a source.
 
     The game ratio is computed based on the sport.  Football and Basketball
@@ -278,7 +283,9 @@ def printRankings(args, teamlist):
 
 
 class HistoryReader:
+
     """Abstract superclass for History readers."""
+
     def __init__(self, source):
         """Initialize the source.
 
@@ -292,12 +299,14 @@ class HistoryReader:
 
 
 class CSVHistoryReader(HistoryReader):
+
     """Create History instances from CSV files with proper column names
     in the first row.
 
     Column names must include: 'date', 'team1', 'score1', 'team2', 'score2'
     in any order.
     """
+
     def __init__(self, source):
         self.reader = csv.DictReader(source)
 
@@ -307,6 +316,7 @@ class CSVHistoryReader(HistoryReader):
 
 
 class PipeFormatHistoryReader(HistoryReader):
+
     """Create History instances from pipe-formatted files.
 
     In this case, column names are assumed which **must** match the
@@ -314,6 +324,7 @@ class PipeFormatHistoryReader(HistoryReader):
 
     Specifically: 'date', 'team1', 'score1', 'team2', 'score2'.
     """
+
     def __init__(self, source):
         self.reader = csv.DictReader(source, delimiter='|',
                                      fieldnames=History._fields)
