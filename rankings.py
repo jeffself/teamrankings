@@ -103,7 +103,7 @@ class SportFactor:
 class Football(SportFactor):
 
     """Football scoring adjustments."""
-    score_factor = 250.0
+    score_factor = 500.0
     max_score = 6.0
 
 
