@@ -90,7 +90,7 @@ class SportFactor:
         adjScore2 = pow((self.adjustScore(score2))/self.max_score, 2)
         gameRatio = (adjScore1 + 1.0) / (adjScore1 + adjScore2 + 2.0)
         if score1 > score2:
-            gameRatio = gameRatio + 1.0
+            gameRatio = gameRatio + 1.05
         elif score1 == score2:
             gameRatio = gameRatio + 0.5
         elif score1 < score2:
@@ -137,7 +137,7 @@ class Team:
         self.vpf = 0
         self.vpa = 0
         self.game_rate_accum = 0.0
-        self.power = 50.0
+        self.power = 100.0
         self.sched_strength = 0.0
 
     def update_stats(self, score, opponent):
