@@ -86,8 +86,9 @@ class SportFactor:
         The winning team also gains an additional 1 point as a bonus
         whereas if the teams tie each team receives an additional 0.5 points.
         '''
-        adjScore1 = pow((self.adjustScore(score1))/self.max_score, 2)
-        adjScore2 = pow((self.adjustScore(score2))/self.max_score, 2)
+        golden = (1 + pow(5, 0.5)) / 2.0
+        adjScore1 = pow((self.adjustScore(score1))/self.max_score, golden)
+        adjScore2 = pow((self.adjustScore(score2))/self.max_score, golden)
         gameRatio = (adjScore1 + 1.0) / (adjScore1 + adjScore2 + 2.0)
         if score1 > score2:
             gameRatio = gameRatio + 1.05
