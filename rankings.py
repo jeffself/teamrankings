@@ -167,10 +167,11 @@ class Game:
     default_sport = SportFactor()
 
     def __init__(self, history, sport=None):
+
         self.date = history.date
-        self.team1 = history.team1
+        self.team1 = history.team1.casefold()
         self.score1 = int(history.score1)
-        self.team2 = history.team2
+        self.team2 = history.team2.casefold()
         self.score2 = int(history.score2)
         if sport is None:
             sport = self.default_sport
@@ -261,6 +262,7 @@ def sortDictByPower(teamlist):
 def printRankings(args, teamlist):
     '''The printRankings method returns the calculated rankings
     '''
+
     fmt = "{0.name:40s} {0.won:4d} {0.lost:5d} {0.tied:5d} " + \
           "{0.pf:5d} {0.pa:5d} {0.power:8.3f}"
     sortedlist = sortDictByPower(teamlist.values())
