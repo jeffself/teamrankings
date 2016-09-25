@@ -169,9 +169,9 @@ class Game:
     def __init__(self, history, sport=None):
 
         self.date = history.date
-        self.team1 = history.team1.casefold().title()
+        self.team1 = history.team1.casefold()
         self.score1 = int(history.score1)
-        self.team2 = history.team2.casefold().title()
+        self.team2 = history.team2.casefold()
         self.score2 = int(history.score2)
         if sport is None:
             sport = self.default_sport
