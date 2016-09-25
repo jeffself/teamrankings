@@ -262,10 +262,12 @@ def sortDictByPower(teamlist):
 def printRankings(args, teamlist):
     '''The printRankings method returns the calculated rankings
     '''
-
     fmt = "{0.name:40s} {0.won:4d} {0.lost:5d} {0.tied:5d} " + \
           "{0.pf:5d} {0.pa:5d} {0.power:8.3f}"
     sortedlist = sortDictByPower(teamlist.values())
+
+    for t in sortedlist:
+        t.name = t.name.title()
     if args.output:
         with open(args.output, 'w') as f:
             f.write('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'
