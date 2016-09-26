@@ -267,7 +267,7 @@ def printRankings(args, teamlist):
     sortedlist = sortDictByPower(teamlist.values())
 
     for t in sortedlist:
-        t.name = t.name.title()
+        t.name = t.name.upper()
     if args.output:
         with open(args.output, 'w') as f:
             f.write('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'
