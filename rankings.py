@@ -40,7 +40,7 @@ until it matches the actual outcomes.
 rankings.txt is a text file that is optional. It is a generated text file
 containing the generated rankings.
 
-This is a Python 3.3 application.
+This is a Python 3.8 application.
 """
 
 import math
@@ -95,10 +95,8 @@ class SportFactor:
         game_ratio = (adjusted_score_1 + 1.0) / (adjusted_score_1 + adjusted_score_2 + 2.0)
         if score1 > score2:
             game_ratio += 1.05
-            print('Game ratio where Score 1 > Score 2 = {}'.format(game_ratio))
         elif score1 == score2:
             game_ratio += 0.5
-            print('Game ratio where Score 1 = Score 2 = {}'.format(game_ratio))
         elif score1 < score2:
             pass # No adjustment for a loss
         else:
@@ -145,7 +143,7 @@ class Team:
         self.power = 100.0
         self.sched_strength = 0.0
 
-    def update_stats(self, score, opponent):
+    def updateStats(self, score, opponent):
         """
         For an individual game, record the win/loss and score for this game.
         """
@@ -196,8 +194,8 @@ def expectedGameResult(rating1, rating2, x):
     :param:`rating2` Team 2's rating.
     :param:`x` the "K factor" weighting, default is 10.0
     '''
-    expRatio = (1 / (1 + pow(10, (rating2 - rating1) / x)))
-    return expRatio
+    expected_ratio = (1 / (1 + pow(10, (rating2 - rating1) / x)))
+    return expected_ratio
 
 
 def updateTeamRating(teamlist, kfactor):
@@ -211,36 +209,35 @@ def calcTeamRatings(teamlist, totalgames, schedule):
     '''The calcTeamRatings method calculates each teams' power ratings.'''
     kfactor = 10.0
     tolerance = 1e-9
-    stdDevRatio = 1.0
+    std_dev_ratio = 1.0
     max_iterations = 25000
-    stdDevRatioDiff = 100.0
-    oldStdDevRatio = 1.0
+    std_dev_ratio_diff = 100.0
+    old_std_dev_ratio = 1.0
     iterations = 0
-    print("Calculating Power Ratings...")
-    while ((stdDevRatioDiff > tolerance) and (iterations < max_iterations)):
-        oldStdDevRatio = stdDevRatio
+    while ((std_dev_ratio_diff > tolerance) and (iterations < max_iterations)):
+        old_std_dev_ratio = std_dev_ratio
         total_game_rate_accum = 0.0
         for t in teamlist.values():
             t.game_rate_accum = 0.0
         for g in schedule:
-            team1grate = teamlist[g.team1].game_rate_accum
-            team1rating = teamlist[g.team1].power
-            team2grate = teamlist[g.team2].game_rate_accum
-            team2rating = teamlist[g.team2].power
-            team1grate = team1grate + g.game_ratio - \
-                expectedGameResult(team1rating, team2rating, kfactor)
-            team2grate = team2grate + 1 - g.game_ratio - \
-                (1 - expectedGameResult(team1rating, team2rating, kfactor))
-            teamlist[g.team1].game_rate_accum = team1grate
-            teamlist[g.team2].game_rate_accum = team2grate
-            if team1grate > team2grate:
-                total_game_rate_accum = total_game_rate_accum + team1grate
+            team1_game_rating = teamlist[g.team1].game_rate_accum
+            team1_rating = teamlist[g.team1].power
+            team2_game_rating = teamlist[g.team2].game_rate_accum
+            team2_rating = teamlist[g.team2].power
+            team1_game_rating = team1_game_rating + g.game_ratio - \
+                expectedGameResult(team1_rating, team2_rating, kfactor)
+            team2_game_rating = team2_game_rating + 1 - g.game_ratio - \
+                (1 - expectedGameResult(team1_rating, team2_rating, kfactor))
+            teamlist[g.team1].game_rate_accum = team1_game_rating
+            teamlist[g.team2].game_rate_accum = team2_game_rating
+            if team1_game_rating > team2_game_rating:
+                total_game_rate_accum = total_game_rate_accum + team1_game_rating
             else:
-                total_game_rate_accum = total_game_rate_accum + team2grate
+                total_game_rate_accum = total_game_rate_accum + team2_game_rating
         # Calculate grate standard deviation
-        stdDevRatio = math.sqrt(((
-            total_game_rate_accum * total_game_rate_accum) / totalgames))
-        stdDevRatioDiff = (oldStdDevRatio - stdDevRatio) ** 2
+        std_dev_ratio = math.sqrt(((
+            total_game_rate_accum ** 2) / totalgames))
+        std_dev_ratio_diff = (old_std_dev_ratio - std_dev_ratio) ** 2
         iterations = iterations + 1
         # Revise ratings
         updateTeamRating(teamlist, kfactor)
@@ -259,8 +256,8 @@ def printSummary(total_games, total_points):
 
 
 def sortDictByPower(teamlist):
-    sortedlist = sorted(teamlist, key=lambda t: t.power, reverse=True)
-    return sortedlist
+    sorted_list = sorted(teamlist, key=lambda t: t.power, reverse=True)
+    return sorted_list
 
 
 def printRankings(args, teamlist):
@@ -268,9 +265,9 @@ def printRankings(args, teamlist):
     '''
     fmt = "{0.name:40s} {0.won:4d} {0.lost:5d} {0.tied:5d} " + \
           "{0.pf:5d} {0.pa:5d} {0.power:8.3f}"
-    sortedlist = sortDictByPower(teamlist.values())
+    sorted_list = sortDictByPower(teamlist.values())
 
-    for t in sortedlist:
+    for t in sorted_list:
         t.name = t.name.upper()
     if args.output:
         with open(args.output, 'w') as f:
@@ -278,16 +275,16 @@ def printRankings(args, teamlist):
                     .format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA',
                             'Rating'))
             f.write('\n')
-            for team in sortedlist:
-                f.write('{0:4d}'.format(sortedlist.index(team) + 1) + ' ' +
+            for team in sorted_list:
+                f.write('{0:4d}'.format(sorted_list.index(team) + 1) + ' ' +
                         fmt.format(team) + '\n')
         f.close()
     else:
         print('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'
               .format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating')
               )
-        for team in sortedlist:
-            print('{0:4d}'.format(sortedlist.index(team) + 1) + ' ' +
+        for team in sorted_list:
+            print('{0:4d}'.format(sorted_list.index(team) + 1) + ' ' +
                   fmt.format(team))
 
 
@@ -351,8 +348,8 @@ def load(source, sport):
     :param:`sport` is an instance of :class:`SportFactor`.
     """
     # Initialize totalpoints and totalgames to 0.
-    totalpoints = 0
-    totalgames = 0
+    total_points = 0
+    total_games = 0
 
     # Create a list called Schedule. This list will contain Game instances.
     Schedule = []
@@ -375,7 +372,7 @@ def load(source, sport):
         Schedule.append(game)
 
         # Calculate the total number of points scored.
-        totalpoints = totalpoints + game.score1 + game.score2
+        total_points = total_points + game.score1 + game.score2
 
         # Create the teams, if they didn't already exist.
         team1 = TeamList.setdefault(game.team1, Team(game.team1))
@@ -383,17 +380,17 @@ def load(source, sport):
 
         #Update the won-lost-tied record and pts
         #scored and pts allowed for each of the two teams involved in a game.
-        team1.update_stats(game.score1, game.score2)
-        team2.update_stats(game.score2, game.score1)
+        team1.updateStats(game.score1, game.score2)
+        team2.updateStats(game.score2, game.score1)
 
     # Get the total number of games played.
-    totalgames = len(Schedule)
+    total_games = len(Schedule)
 
     # Calculate the rankings.
-    calcTeamRatings(TeamList, totalgames, Schedule)
+    calcTeamRatings(TeamList, total_games, Schedule)
 
     # Return values for display.
-    return totalgames, totalpoints, TeamList
+    return total_games, total_points, TeamList
 
 
 def report(args, totalgames, totalpoints, TeamList):
@@ -428,17 +425,17 @@ def main():
 
     for source in args.file_list:
         reader = reader_class(source)
-        process_rankings(args, reader, args.sport)
+        processRankings(args, reader, args.sport)
 
 
-def process_rankings(args, source, sport):
+def processRankings(args, source, sport):
     """The default command-line app: load and report."""
 
     # Step 1: Load the data from the file, compute the rankings.
-    totalgames, totalpoints, TeamList = load(source, sport)
+    total_games, total_points, TeamList = load(source, sport)
 
     # Step 2: Print a report.
-    report(args, totalgames, totalpoints, TeamList)
+    report(args, total_games, total_points, TeamList)
 
 if __name__ == "__main__":
     main()
