@@ -69,8 +69,13 @@ class SportFactor:
         '''We adjust the score here to prevent a team from running up the
         score.
         '''
-        adjScore = score - (score * score)/self.score_factor
-        return adjScore
+        # adjScore = score - (score * score)/self.score_factor
+        # return adjScore
+
+        golden = (1 + pow(5, 0.5)) / 2.0
+        adjscore = score - ((score ** 2) / self.score_factor)
+        adjusted_score = pow(adjscore / self.max_score, golden)
+        return adjusted_score
 
     def gameRatio(self, score1, score2):
         '''The gameRatio method is used to determine the actual outcome
@@ -86,20 +91,36 @@ class SportFactor:
         The winning team also gains an additional 1 point as a bonus
         whereas if the teams tie each team receives an additional 0.5 points.
         '''
-        golden = (1 + pow(5, 0.5)) / 2.0
-        adjScore1 = pow((self.adjustScore(score1))/self.max_score, golden)
-        adjScore2 = pow((self.adjustScore(score2))/self.max_score, golden)
-        gameRatio = (adjScore1 + 1.0) / (adjScore1 + adjScore2 + 2.0)
+        # golden = (1 + pow(5, 0.5)) / 2.0
+        # adjScore1 = pow((self.adjustScore(score1))/self.max_score, golden)
+        # adjScore2 = pow((self.adjustScore(score2))/self.max_score, golden)
+        # gameRatio = (adjScore1 + 1.0) / (adjScore1 + adjScore2 + 2.0)
+        # if score1 > score2:
+        #     gameRatio = gameRatio + 1.05
+        # elif score1 == score2:
+        #     gameRatio = gameRatio + 0.5
+        # elif score1 < score2:
+        #     pass  # No adjustment for a loss
+        # else:
+        #     raise Exception("Horrifying Design Error")
+        # return gameRatio * 0.5
+
+        adjusted_score_1 = self.adjustScore(score1)
+        adjusted_score_2 = self.adjustScore(score2)
+        game_ratio = (adjusted_score_1 + 1.0) / (adjusted_score_1 + adjusted_score_2 + 2.0)
+        print('Score 1 = {}'.format(score1))
+        print('Score 2 = {}'.format(score2))
         if score1 > score2:
-            gameRatio = gameRatio + 1.05
+            game_ratio += 1.05
+            print('Game ratio where Score 1 > Score 2 = {}'.format(game_ratio))
         elif score1 == score2:
-            gameRatio = gameRatio + 0.5
+            game_ratio += 0.5
+            print('Game ratio where Score 1 = Score 2 = {}'.format(game_ratio))
         elif score1 < score2:
-            pass  # No adjustment for a loss
+            pass # No adjustment for a loss
         else:
             raise Exception("Horrifying Design Error")
-        return gameRatio * 0.5
-
+        return game_ratio * 0.5
 
 class Football(SportFactor):
 
