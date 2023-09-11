@@ -1,3 +1,0 @@
-The total number of games played is 159
-The total number of points scored is 4396
-The average number of points scored per team per game is 13.824
