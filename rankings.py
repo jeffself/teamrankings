@@ -40,21 +40,36 @@ until it matches the actual outcomes.
 rankings.txt is a text file that is optional. It is a generated text file
 containing the generated rankings.
 
-This is a Python 3.8 application.
+This is a Python 3.12 application.
 """
 
 import math
 import csv
 from collections import namedtuple
 import argparse
+from dataclasses import dataclass, field
+from typing import Callable, Literal
+
 
 # Raw input is a History record.
 # Could be read via some kind of CSV reader, but numerous other
 # formats are possible.
 
-History = namedtuple('History', ['date', 'team1', 'score1', 'team2', 'score2'])
+@dataclass(slots=True)
+class History:
+    """A record of a game.
+
+    This is the raw data input for the program.  It's used to create
+    instances of :class:`Game` which are used to calculate rankings.
+    """
+    date: str
+    team1: str
+    score1: int
+    team2: str
+    score2: int
 
 
+@dataclass(slots=True)
 class SportFactor:
     """Adjustments to normalize points into scoring opportunities.
 
@@ -62,8 +77,8 @@ class SportFactor:
     It's used to create instances of :class:`Game` from the raw
     :class:`History` data.
     """
-    score_factor = 100.0
-    max_score = 1.0
+    score_factor: float = 100.0
+    max_score: float = 1.0
 
     def adjustScore(self, score):
         '''We adjust the score here to prevent a team from running up the
@@ -103,62 +118,66 @@ class SportFactor:
             raise Exception("Horrifying Design Error")
         return game_ratio * 0.5
 
+@dataclass(slots=True)
 class Football(SportFactor):
 
     """Football scoring adjustments."""
-    score_factor = 500.0
-    max_score = 6.0
+    score_factor: float = 500.0
+    max_score: float = 6.0
 
 
+@dataclass(slots=True)
 class Basketball(SportFactor):
 
     """Basketball scoring adjustments."""
-    score_factor = 750.0
-    max_score = 3.0
+    score_factor: float = 750.0
+    max_score: float = 3.0
 
 
+@dataclass(slots=True)
 class Team:
 
     """An individual team.  A name, plus a summary of wins, losses and points
     scored."""
+    name: str
+    won: int = 0
+    lost: int = 0
+    tied: int = 0
+    pf: int = 0
+    pa: int = 0
+    hwon: int = 0
+    hlost: int = 0
+    htied: int = 0
+    hpf: int = 0
+    hpa: int = 0
+    vwon: int = 0
+    vlost: int = 0
+    vtied: int = 0
+    vpf: int = 0
+    vpa: int = 0
+    game_rate_accum: float = 0.0
+    power: float = 100.0
+    sched_strength: float = 0.0
 
-    def __init__(self, name):
-        self.name = name
-        self.won = 0
-        self.lost = 0
-        self.tied = 0
-        self.pf = 0
-        self.pa = 0
-        self.hwon = 0
-        self.hlost = 0
-        self.htied = 0
-        self.hpf = 0
-        self.hpa = 0
-        self.vwon = 0
-        self.vlost = 0
-        self.vtied = 0
-        self.vpf = 0
-        self.vpa = 0
-        self.game_rate_accum = 0.0
-        self.power = 100.0
-        self.sched_strength = 0.0
-
-    def updateStats(self, score, opponent):
+    def updateStats(self, score: int, opponent: int) -> None:
         """
         For an individual game, record the win/loss and score for this game.
         """
-        self.pf = self.pf + score
-        self.pa = self.pa + opponent
-        if score > opponent:
-            self.won = self.won + 1
-        elif score < opponent:
-            self.lost = self.lost + 1
-        elif score == opponent:
-            self.tied = self.tied + 1
-        else:
-            raise Exception("Horrifying Design Error")
+        self.pf += score
+        self.pa += opponent
+
+        match score, opponent:
+            case score, opponent if score > opponent:
+                self.won += 1
+            case score, opponent if score < opponent:
+                self.lost += 1
+            case score, opponent if score == opponent:
+                self.tied += 1
+            case _:
+                raise Exception("Invalid scores: score and opponent must be non-negative integers")
 
 
+@dataclass(slots=True)
 class Game:
 
     """An individual game, hased on a History object read from a source.
@@ -168,15 +187,20 @@ class Game:
     """
     default_sport = SportFactor()
 
-    def __init__(self, history, sport=None):
+    date: str
+    team1: str
+    score1: int
+    team2: str
+    score2: int
+    game_ratio: float
+
+    def __init__(self, history: History, sport: SportFactor):
 
         self.date = history.date
         self.team1 = history.team1.casefold()
         self.score1 = int(history.score1)
         self.team2 = history.team2.casefold()
         self.score2 = int(history.score2)
-        if sport is None:
-            sport = self.default_sport
         self.game_ratio = sport.gameRatio(self.score1, self.score2)
 
 
@@ -289,19 +313,14 @@ def printRankings(args, teamlist):
 
 
 class HistoryReader:
-
     """Abstract superclass for History readers."""
 
     def __init__(self, source):
-        """Initialize the source.
-
-        :param:`source` an iterable file-like source of data.
-        """
-        raise NotImplementedError
+        self.source = source
 
     def __iter__(self):
         """Yield History instances from the source."""
-        raise NotImplementedError
+        raise NotImplementedError("Subclasses must implement this method.")
 
 
 class CSVHistoryReader(HistoryReader):
@@ -312,9 +331,9 @@ class CSVHistoryReader(HistoryReader):
     Column names must include: 'date', 'team1', 'score1', 'team2', 'score2'
     in any order.
     """
-
     def __init__(self, source):
-        self.reader = csv.DictReader(source)
+        super().__init__(source)
+        self.reader = csv.DictReader(self.source)
 
     def __iter__(self):
         for row in self.reader:
@@ -330,17 +349,17 @@ class PipeFormatHistoryReader(HistoryReader):
 
     Specifically: 'date', 'team1', 'score1', 'team2', 'score2'.
     """
-
     def __init__(self, source):
+        super().__init__(source)
         self.reader = csv.DictReader(source, delimiter='|',
-                                     fieldnames=History._fields)
+                                     fieldnames=['date', 'team1', 'score1','team2', 'score2'])
 
     def __iter__(self):
         for row in self.reader:
             yield History(**row)
 
 
-def load(source, sport):
+def load(source: HistoryReader, sport: Callable[[int, int], float]) -> tuple[int, int, dict[str, Team]]:
     """Load the TeamList and some totals.
 
     :param:`source` is an iterable source of History instances.  Usually
@@ -399,6 +418,16 @@ def report(args, totalgames, totalpoints, TeamList):
     printRankings(args, TeamList)
 
 
+def processRankings(args, source, sport):
+    """The default command-line app: load and report."""
+
+    # Step 1: Load the data from the file, compute the rankings.
+    total_games, total_points, TeamList = load(source, sport)
+
+    # Step 2: Print a report.
+    report(args, total_games, total_points, TeamList)
+
+
 def main():
     """Parse command-line arguments, run the :func:`process_rankings` function.
     """
@@ -416,26 +445,18 @@ def main():
                         nargs='?', help='The rankings file')
     args = parser.parse_args()
 
-    if args.format is None:
-        reader_class = CSVHistoryReader
-    elif args.format == '|':
-        reader_class = PipeFormatHistoryReader
-    else:
-        raise Exception("Unknown -d {0}".format(args.format))
-
+    match args.format:
+        case None:
+            reader_class = CSVHistoryReader
+        case '|':
+            reader_class = PipeFormatHistoryReader
+        case _:
+            raise Exception("Unknown -d {0}".format(args.format))
+        
     for source in args.file_list:
         reader = reader_class(source)
         processRankings(args, reader, args.sport)
 
-
-def processRankings(args, source, sport):
-    """The default command-line app: load and report."""
-
-    # Step 1: Load the data from the file, compute the rankings.
-    total_games, total_points, TeamList = load(source, sport)
-
-    # Step 2: Print a report.
-    report(args, total_games, total_points, TeamList)
 
 if __name__ == "__main__":
     main()
