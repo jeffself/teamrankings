@@ -49,6 +49,7 @@ from collections import namedtuple
 import argparse
 from dataclasses import dataclass, field
 from typing import Callable, Literal
+from pathlib import Path
 
 
 # Raw input is a History record.
@@ -285,31 +286,52 @@ def sortDictByPower(teamlist):
 
 
 def printRankings(args, teamlist):
-    '''The printRankings method returns the calculated rankings
-    '''
+    '''The printRankings method returns the calculated rankings in text format and also saves to a CSV file'''
     fmt = "{0.name:40s} {0.won:4d} {0.lost:5d} {0.tied:5d} " + \
           "{0.pf:5d} {0.pa:5d} {0.power:8.3f}"
     sorted_list = sortDictByPower(teamlist.values())
 
     for t in sorted_list:
         t.name = t.name.upper()
+
+    # Export in text format using Pathlib
     if args.output:
-        with open(args.output, 'w') as f:
+        output_path = Path(args.output)
+        with output_path.open('w') as f:
             f.write('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'
-                    .format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA',
-                            'Rating'))
+                    .format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating'))
             f.write('\n')
             for team in sorted_list:
                 f.write('{0:4d}'.format(sorted_list.index(team) + 1) + ' ' +
                         fmt.format(team) + '\n')
-        f.close()
     else:
+        # Print to console in text format
         print('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'
               .format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating')
               )
         for team in sorted_list:
             print('{0:4d}'.format(sorted_list.index(team) + 1) + ' ' +
                   fmt.format(team))
+
+    # Automatically create CSV filename based on output filename using Pathlib
+    csv_filename = output_path.with_suffix('.csv') if args.output else Path('rankings.csv')
+    with csv_filename.open('w', newline='') as csvfile:
+        fieldnames = ['Rank', 'Team', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for rank, team in enumerate(sorted_list, start=1):
+            writer.writerow({
+                'Rank': rank,
+                'Team': team.name,
+                'Won': team.won,
+                'Lost': team.lost,
+                'Tied': team.tied,
+                'PF': team.pf,
+                'PA': team.pa,
+                'Rating': f"{team.power:.3f}"
+            })
+
+    print(f"Rankings have been exported to {csv_filename} as well.")
 
 
 class HistoryReader:
