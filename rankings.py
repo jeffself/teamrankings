@@ -223,15 +223,15 @@ def expectedGameResult(rating1, rating2, x):
     return expected_ratio
 
 
-def updateTeamRating(teamlist, kfactor):
-    for t in teamlist.values():
-        t.power = t.power + \
-            (kfactor *
-                (t.game_rate_accum / (t.won + t.lost + t.tied)))
+def updateTeamRating(teamlist: dict[str, Team], kfactor: float) -> None:
+    teams = teamlist.values()
+    for t in teams:
+        total_games = t.won + t.lost + t.tied
+        if total_games > 0:
+            t.power += kfactor * (t.game_rate_accum / total_games)
 
 
-def calcTeamRatings(teamlist, totalgames, schedule):
-    '''The calcTeamRatings method calculates each teams' power ratings.'''
+def calcTeamRatings(teamlist: dict[str, Team], totalgames: int, schedule: list[Game]) -> None:
     kfactor = 10.0
     tolerance = 1e-9
     std_dev_ratio = 1.0
@@ -239,37 +239,39 @@ def calcTeamRatings(teamlist, totalgames, schedule):
     std_dev_ratio_diff = 100.0
     old_std_dev_ratio = 1.0
     iterations = 0
-    while ((std_dev_ratio_diff > tolerance) and (iterations < max_iterations)):
+
+    teams = teamlist.values()  # cache once for reuse
+
+    while std_dev_ratio_diff > tolerance and iterations < max_iterations:
         old_std_dev_ratio = std_dev_ratio
         total_game_rate_accum = 0.0
-        for t in teamlist.values():
+
+        for t in teams:
             t.game_rate_accum = 0.0
+
         for g in schedule:
-            team1_game_rating = teamlist[g.team1].game_rate_accum
-            team1_rating = teamlist[g.team1].power
-            team2_game_rating = teamlist[g.team2].game_rate_accum
-            team2_rating = teamlist[g.team2].power
-            team1_game_rating = team1_game_rating + g.game_ratio - \
-                expectedGameResult(team1_rating, team2_rating, kfactor)
-            team2_game_rating = team2_game_rating + 1 - g.game_ratio - \
-                (1 - expectedGameResult(team1_rating, team2_rating, kfactor))
-            teamlist[g.team1].game_rate_accum = team1_game_rating
-            teamlist[g.team2].game_rate_accum = team2_game_rating
-            if team1_game_rating > team2_game_rating:
-                total_game_rate_accum = total_game_rate_accum + team1_game_rating
-            else:
-                total_game_rate_accum = total_game_rate_accum + team2_game_rating
-        # Calculate grate standard deviation
-        std_dev_ratio = math.sqrt(((
-            total_game_rate_accum ** 2) / totalgames))
+            t1 = teamlist[g.team1]
+            t2 = teamlist[g.team2]
+            expected = expectedGameResult(t1.power, t2.power, kfactor)
+
+            t1_delta = g.game_ratio - expected
+            t2_delta = (1 - g.game_ratio) - (1 - expected)
+
+            t1.game_rate_accum += t1_delta
+            t2.game_rate_accum += t2_delta
+
+            total_game_rate_accum += max(t1_delta, t2_delta)
+
+        std_dev_ratio = math.sqrt((total_game_rate_accum ** 2) / totalgames)
         std_dev_ratio_diff = (old_std_dev_ratio - std_dev_ratio) ** 2
-        iterations = iterations + 1
-        # Revise ratings
+
         updateTeamRating(teamlist, kfactor)
-    if (iterations > max_iterations):
+        iterations += 1
+
+    if iterations >= max_iterations:
         print("Fatal error: Game ratios aren't converging")
     else:
-        print('The scores were examined {} times.'.format(iterations))
+        print(f'The scores were examined {iterations} times.')
 
 
 def printSummary(total_games, total_points):
