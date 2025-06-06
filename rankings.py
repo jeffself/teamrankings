@@ -221,14 +221,13 @@ def calcTeamRatings(teamlist: dict[str, Team], totalgames: int, schedule: list[G
     kfactor = 10.0
     tolerance = 1e-9
     std_dev_ratio = 1.0
-    max_iterations = 25000
-    std_dev_ratio_diff = 100.0
     old_std_dev_ratio = 1.0
     iterations = 0
+    max_iterations = 25000
 
-    teams = teamlist.values()  # cache once for reuse
+    teams = teamlist.values()  # cache team list for efficiency
 
-    while std_dev_ratio_diff > tolerance and iterations < max_iterations:
+    while not math.isclose(std_dev_ratio, old_std_dev_ratio, rel_tol=tolerance) and iterations < max_iterations:
         old_std_dev_ratio = std_dev_ratio
         total_game_rate_accum = 0.0
 
@@ -249,7 +248,6 @@ def calcTeamRatings(teamlist: dict[str, Team], totalgames: int, schedule: list[G
             total_game_rate_accum += max(t1_delta, t2_delta)
 
         std_dev_ratio = math.sqrt((total_game_rate_accum ** 2) / totalgames)
-        std_dev_ratio_diff = (old_std_dev_ratio - std_dev_ratio) ** 2
 
         updateTeamRating(teamlist, kfactor)
         iterations += 1
@@ -258,7 +256,6 @@ def calcTeamRatings(teamlist: dict[str, Team], totalgames: int, schedule: list[G
         print("Fatal error: Game ratios aren't converging")
     else:
         print(f'The scores were examined {iterations} times.')
-
 
 def printSummary(total_games, total_points):
     avg_pts_game = float(total_points / total_games / 2)
