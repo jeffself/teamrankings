@@ -296,11 +296,9 @@ def printRankings(args, teamlist):
         # Print to console in text format
         output_path = Path('rankings.txt')
         print('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'
-              .format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating')
-              )
-        for team in sorted_list:
-            print('{0:4d}'.format(sorted_list.index(team) + 1) + ' ' +
-                  fmt.format(team))
+            .format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating'))
+        for rank, team in enumerate(sorted_list, start=1):
+            print(f"{rank:4d} {fmt.format(team)}")
 
     # Automatically create CSV filename based on output filename using Pathlib
     csv_filename = output_path.with_suffix('.csv') if args.output else Path('rankings.csv')
