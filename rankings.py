@@ -286,12 +286,10 @@ def printRankings(args, teamlist):
     if args.output:
         output_path = args.output
         with output_path.open('w') as f:
-            f.write('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'
+            f.write('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}\n'
                     .format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating'))
-            f.write('\n')
-            for team in sorted_list:
-                f.write('{0:4d}'.format(sorted_list.index(team) + 1) + ' ' +
-                        fmt.format(team) + '\n')
+            for rank, team in enumerate(sorted_list, start=1):
+                f.write(f"{rank:4d} {fmt.format(team)}\n")
     else:
         # Print to console in text format
         output_path = Path('rankings.txt')
