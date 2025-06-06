@@ -296,7 +296,7 @@ def printRankings(args, teamlist):
 
     # Export in text format using Pathlib
     if args.output:
-        output_path = Path(args.output)
+        output_path = args.output
         with output_path.open('w') as f:
             f.write('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'
                     .format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating'))
@@ -306,6 +306,7 @@ def printRankings(args, teamlist):
                         fmt.format(team) + '\n')
     else:
         # Print to console in text format
+        output_path = Path('rankings.txt')
         print('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'
               .format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating')
               )
@@ -462,9 +463,7 @@ def main():
     parser.set_defaults(sport=SportFactor())
     parser.add_argument('file_list', metavar='History File', type=open,
                         nargs='+', help='Files with Game History')
-    parser.add_argument('--output', required=False)
-    parser.add_argument('output_file', metavar='Rankings File', type=open,
-                        nargs='?', help='The rankings file')
+    parser.add_argument('--output', type=Path, help='Path to save the rankings (CSV and text)')
     args = parser.parse_args()
 
     match args.format:
