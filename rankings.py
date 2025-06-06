@@ -281,25 +281,23 @@ def printRankings(args, teamlist):
 
     # Export in text format using Pathlib
     if args.output:
-        output_path = args.output
-        with output_path.open('w') as f:
-            f.write('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}\n'
-                    .format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating'))
-            for rank, team in enumerate(sorted_list, start=1):
-                f.write(f"{rank:4d} {fmt.format(team)}\n")
+        output_path = args.output  # already a Path object from argparse
     else:
-        # Print to console in text format
         output_path = Path('rankings.txt')
-        print('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}'
-            .format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating'))
-        for rank, team in enumerate(sorted_list, start=1):
-            print(f"{rank:4d} {fmt.format(team)}")
 
-    # Automatically create CSV filename based on output filename using Pathlib
-    csv_filename = output_path.with_suffix('.csv') if args.output else Path('rankings.csv')
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Write the text summary
+    with output_path.open('w') as f:
+        f.write('{:>4s} {:>40s} {:>4s} {:>5s} {:>5s} {:>5s} {:>5s} {:>8s}\n'
+                .format('Rank', '', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating'))
+        for rank, team in enumerate(sorted_list, start=1):
+            f.write(f"{rank:4d} {fmt.format(team)}\n")
+
+    # Write the CSV version
+    csv_filename = output_path.with_suffix('.csv')
     with csv_filename.open('w', newline='') as csvfile:
-        fieldnames = ['Rank', 'Team', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer = csv.DictWriter(csvfile, fieldnames=['Rank', 'Team', 'Won', 'Lost', 'Tied', 'PF', 'PA', 'Rating'])
         writer.writeheader()
         for rank, team in enumerate(sorted_list, start=1):
             writer.writerow({
