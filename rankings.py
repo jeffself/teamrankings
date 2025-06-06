@@ -205,22 +205,8 @@ class Game:
         self.game_ratio = sport.gameRatio(self.score1, self.score2)
 
 
-def expectedGameResult(rating1, rating2, x):
-    '''The expectedGameResult method is used to determine an expected
-    outcome of a game.
-
-    The expected outcome is determined by comparing
-    the ratings of the two teams involved in the game. An expected ratio
-    of 1.0 would mean that one team has a 100% chance of winning. An
-    expected ratio of 0.5 would mean that each team has a 50% chance of
-    winning.
-
-    :param:`rating1` Team 1's rating.
-    :param:`rating2` Team 2's rating.
-    :param:`x` the "K factor" weighting, default is 10.0
-    '''
-    expected_ratio = (1 / (1 + pow(10, (rating2 - rating1) / x)))
-    return expected_ratio
+def expectedGameResult(rating1: float, rating2: float, kfactor: float) -> float:
+    return 1 / (1 + 10 ** ((rating2 - rating1) / kfactor))
 
 
 def updateTeamRating(teamlist: dict[str, Team], kfactor: float) -> None:
