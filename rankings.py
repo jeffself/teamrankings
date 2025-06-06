@@ -177,7 +177,31 @@ class Team:
             case _:
                 raise Exception("Invalid scores: score and opponent must be non-negative integers")
 
+    def updateFromGame(self, game: 'Game', is_home: bool) -> None:
+        """
+        Update the team's stats based on a Game instance.
 
+        Args:
+            game (Game): The game object with results.
+            is_home (bool): Whether this team was the home team.
+        """
+        if is_home:
+            score = game.score1
+            opp_score = game.score2
+        else:
+            score = game.score2
+            opp_score = game.score1
+
+        self.pf += score
+        self.pa += opp_score
+
+        if score > opp_score:
+            self.won += 1
+        elif score < opp_score:
+            self.lost += 1
+        else:
+            self.tied += 1
+        
 @dataclass(slots=True)
 class Game:
 
@@ -401,8 +425,8 @@ def load(source: HistoryReader, sport: Callable[[int, int], float]) -> tuple[int
 
         #Update the won-lost-tied record and pts
         #scored and pts allowed for each of the two teams involved in a game.
-        team1.updateStats(game.score1, game.score2)
-        team2.updateStats(game.score2, game.score1)
+        team1.updateFromGame(game, is_home=False)
+        team2.updateFromGame(game, is_home=True)
 
     # Get the total number of games played.
     total_games = len(Schedule)
