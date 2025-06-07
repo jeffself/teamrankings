@@ -44,6 +44,7 @@ This is a Python 3.12 application.
 """
 
 import math
+import numpy as np
 import csv
 from collections import namedtuple
 import argparse
@@ -244,37 +245,52 @@ def updateTeamRating(teamlist: dict[str, Team], kfactor: float) -> None:
 def calcTeamRatings(teamlist: dict[str, Team], totalgames: int, schedule: list[Game]) -> None:
     kfactor = 10.0
     tolerance = 1e-9
-    std_dev_ratio = 1.0
-    old_std_dev_ratio = 1.0
-    iterations = 0
     max_iterations = 25000
 
-    teams = teamlist.values()  # cache team list for efficiency
+    teams = list(teamlist.values())
+    num_teams = len(teams)
+
+    # Map team names to indexes in the array
+    team_to_idx = {team.name: idx for idx, team in enumerate(teams)}
+
+    # Initialize arrays
+    powers = np.full(num_teams, 100.0)
+    games_played = np.array([t.won + t.lost + t.tied for t in teams], dtype=np.float64)
+    accum = np.zeros(num_teams, dtype=np.float64)
+
+    std_dev_ratio = 1.0
+    old_std_dev_ratio = 0.0
+    iterations = 0
 
     while not math.isclose(std_dev_ratio, old_std_dev_ratio, rel_tol=tolerance) and iterations < max_iterations:
         old_std_dev_ratio = std_dev_ratio
+        accum.fill(0.0)
         total_game_rate_accum = 0.0
 
-        for t in teams:
-            t.game_rate_accum = 0.0
-
         for g in schedule:
-            t1 = teamlist[g.team1]
-            t2 = teamlist[g.team2]
-            expected = expectedGameResult(t1.power, t2.power, kfactor)
+            i = team_to_idx[g.team1]
+            j = team_to_idx[g.team2]
 
-            t1_delta = g.game_ratio - expected
-            t2_delta = (1 - g.game_ratio) - (1 - expected)
+            expected_i = 1 / (1 + 10 ** ((powers[j] - powers[i]) / kfactor))
+            delta_i = g.game_ratio - expected_i
+            delta_j = (1 - g.game_ratio) - (1 - expected_i)
 
-            t1.game_rate_accum += t1_delta
-            t2.game_rate_accum += t2_delta
+            accum[i] += delta_i
+            accum[j] += delta_j
 
-            total_game_rate_accum += max(t1_delta, t2_delta)
+            total_game_rate_accum += max(delta_i, delta_j)
 
         std_dev_ratio = math.sqrt((total_game_rate_accum ** 2) / totalgames)
 
-        updateTeamRating(teamlist, kfactor)
+        # Update powers where games_played > 0 to avoid division by zero
+        valid_mask = games_played > 0
+        powers[valid_mask] += kfactor * (accum[valid_mask] / games_played[valid_mask])
+
         iterations += 1
+
+    # Write back the final ratings to the Team objects
+    for idx, team in enumerate(teams):
+        team.power = powers[idx]
 
     if iterations >= max_iterations:
         print("Fatal error: Game ratios aren't converging")
