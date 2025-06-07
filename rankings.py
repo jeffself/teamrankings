@@ -415,13 +415,17 @@ class PandasHistoryReader(HistoryReader):
 
     def __iter__(self):
         for _, row in self.df.iterrows():
-            yield History(
-                date=row['date'],
-                team1=row['team1'],
-                score1=int(row['score1']),
-                team2=row['team2'],
-                score2=int(row['score2'])
-            )
+            try:
+                yield History(
+                    date=row['date'],
+                    team1=row['team1'],
+                    score1=int(row['score1']),
+                    team2=row['team2'],
+                    score2=int(row['score2'])
+                )
+            except (KeyError, ValueError, TypeError) as e:
+                print(f"Skipping row due to error: {e} -> {row.to_dict()}")
+                continue
 
 
 def load(source: HistoryReader, sport: Callable[[int, int], float]) -> tuple[int, int, dict[str, Team]]:
