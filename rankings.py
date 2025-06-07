@@ -44,6 +44,7 @@ This is a Python 3.12 application.
 """
 
 import math
+import pandas as pd
 import numpy as np
 import csv
 from collections import namedtuple
@@ -401,6 +402,28 @@ class PipeFormatHistoryReader(HistoryReader):
             yield History(**row)
 
 
+class PandasHistoryReader(HistoryReader):
+    def __init__(self, source, delimiter=','):
+        super().__init__(source)
+        self.df = pd.read_csv(
+            source, 
+            delimiter=delimiter, 
+            header=None,
+            names = ['date', 'team1', 'score1', 'team2', 'score2']
+        )
+        self.df.columns = self.df.columns.str.strip().str.lower()
+
+    def __iter__(self):
+        for _, row in self.df.iterrows():
+            yield History(
+                date=row['date'],
+                team1=row['team1'],
+                score1=int(row['score1']),
+                team2=row['team2'],
+                score2=int(row['score2'])
+            )
+
+
 def load(source: HistoryReader, sport: Callable[[int, int], float]) -> tuple[int, int, dict[str, Team]]:
     """Load the TeamList and some totals.
 
@@ -487,14 +510,14 @@ def main():
 
     match args.format:
         case None:
-            reader_class = CSVHistoryReader
+            delimiter = ','
         case '|':
-            reader_class = PipeFormatHistoryReader
+            delimiter = '|'
         case _:
-            raise Exception("Unknown -d {0}".format(args.format))
+            raise Exception(f"Unknown -d {args.format}")
         
     for source in args.file_list:
-        reader = reader_class(source)
+        reader = PandasHistoryReader(source, delimiter)
         processRankings(args, reader, args.sport)
 
 
